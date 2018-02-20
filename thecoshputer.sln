@@ -1,0 +1,38 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BearLib", "BearLib\BearLib.csproj", "{B656D2F5-510F-4E1B-B61D-548683286AF1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vendor", "Vendor", "{48E8AD14-2685-486D-A2E4-2921C3FFCDA7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISA", "ISA\ISA.csproj", "{FF5F72D9-1D78-43A2-AEEE-B582F5EA91BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assembler", "Assembler\Assembler.csproj", "{4B70C61D-3396-4985-9524-59D5F9B0E655}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulator", "Simulator\Simulator.csproj", "{E435518F-9A41-4405-9912-E6CCEF79A14C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B656D2F5-510F-4E1B-B61D-548683286AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B656D2F5-510F-4E1B-B61D-548683286AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF5F72D9-1D78-43A2-AEEE-B582F5EA91BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF5F72D9-1D78-43A2-AEEE-B582F5EA91BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B70C61D-3396-4985-9524-59D5F9B0E655}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B70C61D-3396-4985-9524-59D5F9B0E655}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E435518F-9A41-4405-9912-E6CCEF79A14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E435518F-9A41-4405-9912-E6CCEF79A14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B656D2F5-510F-4E1B-B61D-548683286AF1} = {48E8AD14-2685-486D-A2E4-2921C3FFCDA7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {992FBC57-804E-49CE-A54B-E21E37CAF9FC}
+	EndGlobalSection
+EndGlobal
