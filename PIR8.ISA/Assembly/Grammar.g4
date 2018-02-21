@@ -50,15 +50,14 @@ LABEL : [a-zA-Z_.][a-zA-Z0-9_.]* ;
 WHITESPACE : [ \t\n\r] -> skip ;
 
 file : entry* ;
-label : LABEL COLON ;
 mnemonic : LABEL ;
 constName : LABEL ;
 
-// variable definition label will be ignored later
 entry
-	: label? mnemonic operands? #instruction
-	| label? type datum (COMMA datum)* #data
-	| label? constName ASSIGN expr #constant
+	: LABEL COLON #label
+	| mnemonic operands? #instruction
+	| type datum (COMMA datum)* #data
+	| constName ASSIGN expr #constant
 	;
 
 operands

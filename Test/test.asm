@@ -7,10 +7,12 @@ foo.bar:
 	set r1, r2 ; comment
 	set r99, ip
 	load 0x245
-test:
 	some_other_var = x + y + y * 2
+	baz = 42
+baz:
 .baz:
 	blah blah
-	qword 53, 0x412, 0b11101042
+	qword 53, 0x412, 0b111010
 	meh [r0]
 	meh [0x412]
+end:

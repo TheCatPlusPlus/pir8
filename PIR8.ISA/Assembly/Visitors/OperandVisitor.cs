@@ -4,18 +4,26 @@ using JetBrains.Annotations;
 
 using PIR8.ISA.Assembly.AST;
 using PIR8.ISA.Assembly.Gen;
+using PIR8.ISA.Assembly.Pipeline;
 
 namespace PIR8.ISA.Assembly.Visitors
 {
 	public sealed class OperandVisitor : GrammarBaseVisitor<List<OperandNode>>
 	{
+		private readonly ErrorListener _errors;
+
 		[NotNull]
 		protected override List<OperandNode> DefaultResult => new List<OperandNode>();
+
+		public OperandVisitor(ErrorListener errors)
+		{
+			_errors = errors;
+		}
 
 		[NotNull]
 		public override List<OperandNode> VisitImmOp([NotNull] GrammarParser.ImmOpContext context)
 		{
-			var visitor = new ExprVisitor();
+			var visitor = new ExprVisitor(_errors);
 			return new List<OperandNode>
 			{
 				visitor.Visit(context.expr())
@@ -39,7 +47,7 @@ namespace PIR8.ISA.Assembly.Visitors
 		[NotNull]
 		public override List<OperandNode> VisitImmAddrOp([NotNull] GrammarParser.ImmAddrOpContext context)
 		{
-			var visitor = new ExprVisitor();
+			var visitor = new ExprVisitor(_errors);
 			return new List<OperandNode>
 			{
 				new ImmediateAddressNode

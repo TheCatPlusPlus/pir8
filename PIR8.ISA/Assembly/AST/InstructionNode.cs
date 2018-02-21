@@ -4,10 +4,8 @@ using JetBrains.Annotations;
 
 namespace PIR8.ISA.Assembly.AST
 {
-	public sealed class InstructionNode : Node
+	public sealed class InstructionNode : EncodableNode
 	{
-		[CanBeNull]
-		public string Label { get; set; }
 		[CanBeNull]
 		public string Mnemonic { get; set; }
 		[NotNull]

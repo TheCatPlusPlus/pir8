@@ -1,7 +1,5 @@
 using System;
 
-using JetBrains.Annotations;
-
 using PIR8.ISA.Utils;
 
 namespace PIR8.ISA.Assembly.AST
@@ -13,12 +11,9 @@ namespace PIR8.ISA.Assembly.AST
 		public string Digits { get; }
 		public bool IsNegative { get; }
 
-		public uint? Value { get; }
-		public int? SignedValue { get; }
-		[CanBeNull]
-		public string BinaryValue => Value != null
-			? Convert.ToString(Value.Value, 2)
-			: null;
+		public uint Value { get; }
+		public int SignedValue { get; }
+		public string BinaryValue => Convert.ToString(Value, 2);
 
 		public NumberNode(string raw, bool negative, string digits, int radix)
 		{
@@ -27,36 +22,14 @@ namespace PIR8.ISA.Assembly.AST
 			IsNegative = negative;
 			Radix = radix;
 
-			Value = TryParse();
-			SignedValue = TryMakeSigned();
-		}
+			var value = Convert.ToUInt32(Digits, Radix);
 
-		private uint? TryParse()
-		{
-			try
-			{
-				var value = Convert.ToUInt32(Digits, Radix);
-				return IsNegative ? value.TwoComplement() : value;
-			}
-			catch (FormatException)
-			{
-				return null;
-			}
-		}
-
-		private int? TryMakeSigned()
-		{
-			if (Value == null)
-			{
-				return null;
-			}
-
-			if (IsNegative)
-			{
-				return -(int)Value.Value.TwoComplement();
-			}
-
-			return (int)Value;
+			Value = IsNegative
+				? value.TwoComplement()
+				: value;
+			SignedValue = IsNegative
+				? -(int)value
+				: (int)value;
 		}
 	}
 }

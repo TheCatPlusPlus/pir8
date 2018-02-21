@@ -2,23 +2,20 @@ using JetBrains.Annotations;
 
 using PIR8.ISA.Assembly.AST;
 using PIR8.ISA.Assembly.Gen;
+using PIR8.ISA.Assembly.Pipeline;
 
 namespace PIR8.ISA.Assembly.Visitors
 {
 	public sealed class InstructionVisitor : GrammarBaseVisitor<InstructionNode>
 	{
+		private readonly ErrorListener _errors;
+
 		[NotNull]
 		protected override InstructionNode DefaultResult => new InstructionNode();
 
-		[NotNull]
-		public override InstructionNode VisitLabel([NotNull] GrammarParser.LabelContext context)
+		public InstructionVisitor(ErrorListener errors)
 		{
-			return new InstructionNode
-			{
-				Label = context.LABEL().GetText(),
-				Start = context.Start,
-				End = context.Stop
-			};
+			_errors = errors;
 		}
 
 		[NotNull]
@@ -35,7 +32,7 @@ namespace PIR8.ISA.Assembly.Visitors
 		[NotNull]
 		public override InstructionNode VisitOperands([NotNull] GrammarParser.OperandsContext context)
 		{
-			var visitor = new OperandVisitor();
+			var visitor = new OperandVisitor(_errors);
 			var node = new InstructionNode
 			{
 				Start = context.Start,
@@ -49,11 +46,6 @@ namespace PIR8.ISA.Assembly.Visitors
 		protected override InstructionNode AggregateResult(
 			[NotNull] InstructionNode aggregate, [NotNull] InstructionNode nextResult)
 		{
-			if (!string.IsNullOrEmpty(nextResult.Label))
-			{
-				aggregate.Label = nextResult.Label;
-			}
-
 			if (!string.IsNullOrEmpty(nextResult.Mnemonic))
 			{
 				aggregate.Mnemonic = nextResult.Mnemonic;

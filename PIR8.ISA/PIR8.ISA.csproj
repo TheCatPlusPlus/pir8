@@ -10,4 +10,8 @@
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Assembly\Codec\" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ using System.Text;
 
 using JetBrains.Annotations;
 
-using PIR8.ISA.Assembly;
+using PIR8.ISA.Assembly.Pipeline;
 
 namespace PIR8.Assembler
 {
@@ -32,23 +32,23 @@ namespace PIR8.Assembler
 				{
 					using (var dbgStream = new FileStream(symbols, FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
 					{
-						Assemble(inStream, outStream, dbgStream);
+						Assemble(input, inStream, outStream, dbgStream);
 					}
 				}
 				else
 				{
-					Assemble(inStream, outStream);
+					Assemble(input, inStream, outStream);
 				}
 			}
 		}
 
-		private static void Assemble(Stream inStream, Stream outStream, [CanBeNull] Stream dbgStream = null)
+		private static void Assemble(string file, Stream inStream, Stream outStream, [CanBeNull] Stream dbgStream = null)
 		{
 			var input = new StreamReader(inStream, Encoding.UTF8);
 			var output = new BinaryWriter(outStream, Encoding.ASCII);
 			var debug = dbgStream != null ? new BinaryWriter(dbgStream, Encoding.UTF8) : null;
 
-			var source = AsmSource.Parse(input);
+			AssemblerPipeline.Run(file, input, output, debug);
 		}
 	}
 }

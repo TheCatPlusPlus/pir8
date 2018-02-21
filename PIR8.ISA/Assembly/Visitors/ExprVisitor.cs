@@ -4,15 +4,23 @@ using JetBrains.Annotations;
 
 using PIR8.ISA.Assembly.AST;
 using PIR8.ISA.Assembly.Gen;
+using PIR8.ISA.Assembly.Pipeline;
 
 namespace PIR8.ISA.Assembly.Visitors
 {
 	public sealed class ExprVisitor : GrammarBaseVisitor<ExprNode>
 	{
+		private readonly ErrorListener _errors;
+
+		public ExprVisitor(ErrorListener errors)
+		{
+			_errors = errors;
+		}
+
 		[NotNull]
 		public override ExprNode VisitConstantLit([NotNull] GrammarParser.ConstantLitContext context)
 		{
-			return new ConstantNode(context.LABEL().GetText())
+			return new ConstantNode(context.GetText())
 			{
 				Start = context.Start,
 				End = context.Stop
@@ -50,11 +58,19 @@ namespace PIR8.ISA.Assembly.Visitors
 				digits = digits.Substring(2);
 			}
 
-			return new NumberNode(raw, negative, digits, radix)
+			try
 			{
-				Start = context.Start,
-				End = context.Stop
-			};
+				return new NumberNode(raw, negative, digits, radix)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
+			}
+			catch (FormatException e)
+			{
+				_errors.SyntaxError(context, $"invalid number literal {raw}: {e.Message}");
+				return new NumberNode(raw, false, "0", 10);
+			}
 		}
 
 		[NotNull]

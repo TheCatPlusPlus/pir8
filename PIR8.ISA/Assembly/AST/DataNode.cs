@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace PIR8.ISA.Assembly.AST
 {
-	public sealed class DataNode : Node
+	public sealed class DataNode : EncodableNode
 	{
 		public string Type { get; }
 		public List<ExprNode> Data { get; }

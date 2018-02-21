@@ -39,12 +39,6 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFile([NotNull] GrammarParser.FileContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.label"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLabel([NotNull] GrammarParser.LabelContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.mnemonic"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -56,6 +50,13 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitConstName([NotNull] GrammarParser.ConstNameContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>label</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitLabel([NotNull] GrammarParser.LabelContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>instruction</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
