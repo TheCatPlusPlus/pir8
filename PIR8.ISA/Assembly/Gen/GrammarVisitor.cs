@@ -51,11 +51,11 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitMnemonic([NotNull] GrammarParser.MnemonicContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.varName"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.constName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitVarName([NotNull] GrammarParser.VarNameContext context);
+	Result VisitConstName([NotNull] GrammarParser.ConstNameContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>instruction</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
@@ -71,12 +71,12 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitData([NotNull] GrammarParser.DataContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>variable</c>
+	/// Visit a parse tree produced by the <c>constant</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitVariable([NotNull] GrammarParser.VariableContext context);
+	Result VisitConstant([NotNull] GrammarParser.ConstantContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.operands"/>.
 	/// </summary>
@@ -138,12 +138,12 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitAddExpr([NotNull] GrammarParser.AddExprContext context);
 	/// <summary>
-	/// Visit a parse tree produced by the <c>varLit</c>
+	/// Visit a parse tree produced by the <c>constantLit</c>
 	/// labeled alternative in <see cref="GrammarParser.expr"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitVarLit([NotNull] GrammarParser.VarLitContext context);
+	Result VisitConstantLit([NotNull] GrammarParser.ConstantLitContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>numberLit</c>
 	/// labeled alternative in <see cref="GrammarParser.expr"/>.

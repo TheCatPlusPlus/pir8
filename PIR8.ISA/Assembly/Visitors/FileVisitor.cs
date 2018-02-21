@@ -29,13 +29,13 @@ namespace PIR8.ISA.Assembly.Visitors
 		}
 
 		[NotNull]
-		public override RootNode VisitVariable([NotNull] GrammarParser.VariableContext context)
+		public override RootNode VisitConstant([NotNull] GrammarParser.ConstantContext context)
 		{
 			var visitor = new ExprVisitor();
-			var node = new VariableDefNode
+			var node = new ConstantDefNode
 			{
 				BadLabel = context.label()?.GetText(),
-				Name = context.varName().GetText(),
+				Name = context.constName().GetText(),
 				Value = visitor.Visit(context.expr())
 			};
 

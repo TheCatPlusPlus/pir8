@@ -65,7 +65,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <return>The visitor result.</return>
 	public virtual Result VisitMnemonic([NotNull] GrammarParser.MnemonicContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="GrammarParser.varName"/>.
+	/// Visit a parse tree produced by <see cref="GrammarParser.constName"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -73,7 +73,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVarName([NotNull] GrammarParser.VarNameContext context) { return VisitChildren(context); }
+	public virtual Result VisitConstName([NotNull] GrammarParser.ConstNameContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>instruction</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
@@ -97,7 +97,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <return>The visitor result.</return>
 	public virtual Result VisitData([NotNull] GrammarParser.DataContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>variable</c>
+	/// Visit a parse tree produced by the <c>constant</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -106,7 +106,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVariable([NotNull] GrammarParser.VariableContext context) { return VisitChildren(context); }
+	public virtual Result VisitConstant([NotNull] GrammarParser.ConstantContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="GrammarParser.operands"/>.
 	/// <para>
@@ -204,7 +204,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <return>The visitor result.</return>
 	public virtual Result VisitAddExpr([NotNull] GrammarParser.AddExprContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by the <c>varLit</c>
+	/// Visit a parse tree produced by the <c>constantLit</c>
 	/// labeled alternative in <see cref="GrammarParser.expr"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -213,7 +213,7 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitVarLit([NotNull] GrammarParser.VarLitContext context) { return VisitChildren(context); }
+	public virtual Result VisitConstantLit([NotNull] GrammarParser.ConstantLitContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by the <c>numberLit</c>
 	/// labeled alternative in <see cref="GrammarParser.expr"/>.

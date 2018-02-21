@@ -43,11 +43,12 @@ public partial class GrammarParser : Parser {
 		COLON=21, COMMA=22, ASSIGN=23, KW_BYTE=24, KW_WORD=25, KW_DWORD=26, KW_QWORD=27, 
 		REGISTER=28, LABEL=29, WHITESPACE=30;
 	public const int
-		RULE_file = 0, RULE_label = 1, RULE_mnemonic = 2, RULE_varName = 3, RULE_entry = 4, 
-		RULE_operands = 5, RULE_type = 6, RULE_operand = 7, RULE_datum = 8, RULE_expr = 9;
+		RULE_file = 0, RULE_label = 1, RULE_mnemonic = 2, RULE_constName = 3, 
+		RULE_entry = 4, RULE_operands = 5, RULE_type = 6, RULE_operand = 7, RULE_datum = 8, 
+		RULE_expr = 9;
 	public static readonly string[] ruleNames = {
-		"file", "label", "mnemonic", "varName", "entry", "operands", "type", "operand", 
-		"datum", "expr"
+		"file", "label", "mnemonic", "constName", "entry", "operands", "type", 
+		"operand", "datum", "expr"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -218,24 +219,24 @@ public partial class GrammarParser : Parser {
 		return _localctx;
 	}
 
-	public partial class VarNameContext : ParserRuleContext {
+	public partial class ConstNameContext : ParserRuleContext {
 		public ITerminalNode LABEL() { return GetToken(GrammarParser.LABEL, 0); }
-		public VarNameContext(ParserRuleContext parent, int invokingState)
+		public ConstNameContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_varName; } }
+		public override int RuleIndex { get { return RULE_constName; } }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IGrammarVisitor<TResult> typedVisitor = visitor as IGrammarVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVarName(this);
+			if (typedVisitor != null) return typedVisitor.VisitConstName(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public VarNameContext varName() {
-		VarNameContext _localctx = new VarNameContext(Context, State);
-		EnterRule(_localctx, 6, RULE_varName);
+	public ConstNameContext constName() {
+		ConstNameContext _localctx = new ConstNameContext(Context, State);
+		EnterRule(_localctx, 6, RULE_constName);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
@@ -263,6 +264,24 @@ public partial class GrammarParser : Parser {
 		public EntryContext() { }
 		public virtual void CopyFrom(EntryContext context) {
 			base.CopyFrom(context);
+		}
+	}
+	public partial class ConstantContext : EntryContext {
+		public ConstNameContext constName() {
+			return GetRuleContext<ConstNameContext>(0);
+		}
+		public ITerminalNode ASSIGN() { return GetToken(GrammarParser.ASSIGN, 0); }
+		public ExprContext expr() {
+			return GetRuleContext<ExprContext>(0);
+		}
+		public LabelContext label() {
+			return GetRuleContext<LabelContext>(0);
+		}
+		public ConstantContext(EntryContext context) { CopyFrom(context); }
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IGrammarVisitor<TResult> typedVisitor = visitor as IGrammarVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitConstant(this);
+			else return visitor.VisitChildren(this);
 		}
 	}
 	public partial class DataContext : EntryContext {
@@ -303,24 +322,6 @@ public partial class GrammarParser : Parser {
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IGrammarVisitor<TResult> typedVisitor = visitor as IGrammarVisitor<TResult>;
 			if (typedVisitor != null) return typedVisitor.VisitInstruction(this);
-			else return visitor.VisitChildren(this);
-		}
-	}
-	public partial class VariableContext : EntryContext {
-		public VarNameContext varName() {
-			return GetRuleContext<VarNameContext>(0);
-		}
-		public ITerminalNode ASSIGN() { return GetToken(GrammarParser.ASSIGN, 0); }
-		public ExprContext expr() {
-			return GetRuleContext<ExprContext>(0);
-		}
-		public LabelContext label() {
-			return GetRuleContext<LabelContext>(0);
-		}
-		public VariableContext(EntryContext context) { CopyFrom(context); }
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IGrammarVisitor<TResult> typedVisitor = visitor as IGrammarVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVariable(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -391,7 +392,7 @@ public partial class GrammarParser : Parser {
 				}
 				break;
 			case 3:
-				_localctx = new VariableContext(_localctx);
+				_localctx = new ConstantContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
 				State = 53;
@@ -403,7 +404,7 @@ public partial class GrammarParser : Parser {
 					}
 					break;
 				}
-				State = 55; varName();
+				State = 55; constName();
 				State = 56; Match(ASSIGN);
 				State = 57; expr(0);
 				}
@@ -724,12 +725,12 @@ public partial class GrammarParser : Parser {
 			else return visitor.VisitChildren(this);
 		}
 	}
-	public partial class VarLitContext : ExprContext {
+	public partial class ConstantLitContext : ExprContext {
 		public ITerminalNode LABEL() { return GetToken(GrammarParser.LABEL, 0); }
-		public VarLitContext(ExprContext context) { CopyFrom(context); }
+		public ConstantLitContext(ExprContext context) { CopyFrom(context); }
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IGrammarVisitor<TResult> typedVisitor = visitor as IGrammarVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitVarLit(this);
+			if (typedVisitor != null) return typedVisitor.VisitConstantLit(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
@@ -894,7 +895,7 @@ public partial class GrammarParser : Parser {
 				break;
 			case LABEL:
 				{
-				_localctx = new VarLitContext(_localctx);
+				_localctx = new ConstantLitContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
 				State = 97; Match(LABEL);

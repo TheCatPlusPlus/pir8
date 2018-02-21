@@ -10,9 +10,9 @@ namespace PIR8.ISA.Assembly.Visitors
 	public sealed class ExprVisitor : GrammarBaseVisitor<ExprNode>
 	{
 		[NotNull]
-		public override ExprNode VisitVarLit([NotNull] GrammarParser.VarLitContext context)
+		public override ExprNode VisitConstantLit([NotNull] GrammarParser.ConstantLitContext context)
 		{
-			return new VariableNode(context.LABEL().GetText());
+			return new ConstantNode(context.LABEL().GetText());
 		}
 
 		[NotNull]

@@ -52,13 +52,13 @@ WHITESPACE : [ \t\n\r] -> skip ;
 file : entry* ;
 label : LABEL COLON ;
 mnemonic : LABEL ;
-varName : LABEL ;
+constName : LABEL ;
 
 // variable definition label will be ignored later
 entry
 	: label? mnemonic operands? #instruction
 	| label? type datum (COMMA datum)* #data
-	| label? varName ASSIGN expr #variable
+	| label? constName ASSIGN expr #constant
 	;
 
 operands
@@ -95,5 +95,5 @@ expr
 	| expr XOR expr #xorExpr
 	| expr OR expr #orExpr
 	| NUMBER #numberLit
-	| LABEL #varLit
+	| LABEL #constantLit
 	;
