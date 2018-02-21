@@ -9,7 +9,7 @@ LINE_COMMENT_1 : ';' ~[\r\n]* -> channel(HIDDEN) ;
 LINE_COMMENT_2 : '//' ~[\r\n]* -> channel(HIDDEN) ;
 
 fragment HEX_DIGIT : [a-fA-F0-9] ;
-fragment DIGIT : [0-9]+ ;
+fragment DIGIT : [0-9] ;
 fragment HEX_NUMBER : '-'? '0' [xX] HEX_DIGIT+ ;
 fragment OCT_NUMBER : '-'? '0' [oO] DIGIT+ ;
 fragment BIN_NUMBER : '0' [bB] DIGIT+ ;

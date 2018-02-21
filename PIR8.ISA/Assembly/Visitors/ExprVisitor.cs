@@ -18,7 +18,35 @@ namespace PIR8.ISA.Assembly.Visitors
 		[NotNull]
 		public override ExprNode VisitNumberLit([NotNull] GrammarParser.NumberLitContext context)
 		{
-			return new NumberNode(context.NUMBER().GetText());
+			var digits = context.GetText();
+			var raw = digits;
+			var negative = false;
+			var radix = 10;
+
+			if (digits.StartsWith("-"))
+			{
+				negative = true;
+				digits = digits.Substring(1);
+			}
+
+			if (digits.StartsWith("0x"))
+			{
+				radix = 16;
+				digits = digits.Substring(2);
+			}
+			else if (digits.StartsWith("0o"))
+			{
+				radix = 8;
+				digits = digits.Substring(2);
+			}
+			else if (digits.StartsWith("0b"))
+			{
+				radix = 2;
+				negative = false;
+				digits = digits.Substring(2);
+			}
+
+			return new NumberNode(raw, negative, digits, radix);
 		}
 
 		[NotNull]

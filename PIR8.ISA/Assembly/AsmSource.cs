@@ -12,7 +12,7 @@ namespace PIR8.ISA.Assembly
 {
 	public sealed class AsmSource
 	{
-		private AsmSource(Node root)
+		private AsmSource(RootNode root)
 		{
 			Console.WriteLine(root.ToFormattedString());
 		}
