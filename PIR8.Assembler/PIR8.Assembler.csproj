@@ -14,7 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ISA\ISA.csproj" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PIR8.ISA\PIR8.ISA.csproj" />
   </ItemGroup>
 
 </Project>

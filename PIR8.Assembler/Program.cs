@@ -5,7 +5,9 @@ using System.Text;
 
 using JetBrains.Annotations;
 
-namespace Assembler
+using PIR8.ISA.Assembly;
+
+namespace PIR8.Assembler
 {
 	internal static class Program
 	{
@@ -44,9 +46,9 @@ namespace Assembler
 		{
 			var input = new StreamReader(inStream, Encoding.UTF8);
 			var output = new BinaryWriter(outStream, Encoding.ASCII);
-			var debug = new BinaryWriter(dbgStream, Encoding.UTF8);
+			var debug = dbgStream != null ? new BinaryWriter(dbgStream, Encoding.UTF8) : null;
 
-
+			var source = AsmSource.Parse(input);
 		}
 	}
 }

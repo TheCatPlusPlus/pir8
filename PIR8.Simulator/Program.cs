@@ -1,6 +1,6 @@
 using System;
 
-namespace Simulator
+namespace PIR8.Simulator
 {
 	internal class Program
 	{

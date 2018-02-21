@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BearLib\BearLib.csproj" />
-    <ProjectReference Include="..\ISA\ISA.csproj" />
+    <ProjectReference Include="..\PIR8.ISA\PIR8.ISA.csproj" />
   </ItemGroup>
 
 </Project>
