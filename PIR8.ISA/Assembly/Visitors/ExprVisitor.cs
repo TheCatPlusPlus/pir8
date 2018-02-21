@@ -12,7 +12,11 @@ namespace PIR8.ISA.Assembly.Visitors
 		[NotNull]
 		public override ExprNode VisitConstantLit([NotNull] GrammarParser.ConstantLitContext context)
 		{
-			return new ConstantNode(context.LABEL().GetText());
+			return new ConstantNode(context.LABEL().GetText())
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 		}
 
 		[NotNull]
@@ -46,7 +50,11 @@ namespace PIR8.ISA.Assembly.Visitors
 				digits = digits.Substring(2);
 			}
 
-			return new NumberNode(raw, negative, digits, radix);
+			return new NumberNode(raw, negative, digits, radix)
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 		}
 
 		[NotNull]
@@ -64,12 +72,20 @@ namespace PIR8.ISA.Assembly.Visitors
 
 			if (negate != null)
 			{
-				return new NegateNode(operand);
+				return new NegateNode(operand)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (invert != null)
 			{
-				return new BitInvertNode(operand);
+				return new BitInvertNode(operand)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			throw new InvalidOperationException();
@@ -85,12 +101,20 @@ namespace PIR8.ISA.Assembly.Visitors
 
 			if (sub != null)
 			{
-				return new SubtractNode(left, right);
+				return new SubtractNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (add != null)
 			{
-				return new AddNode(left, right);
+				return new AddNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			throw new InvalidOperationException();
@@ -107,17 +131,29 @@ namespace PIR8.ISA.Assembly.Visitors
 
 			if (multiply != null)
 			{
-				return new MultiplyNode(left, right);
+				return new MultiplyNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (divide != null)
 			{
-				return new DivideNode(left, right);
+				return new DivideNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (modulo != null)
 			{
-				return new ModuloNode(left, right);
+				return new ModuloNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			throw new InvalidOperationException();
@@ -134,17 +170,29 @@ namespace PIR8.ISA.Assembly.Visitors
 
 			if (arithShift != null)
 			{
-				return new BitArithmeticShiftNode(left, right);
+				return new BitArithmeticShiftNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (rightShift != null)
 			{
-				return new BitRightShiftNode(left, right);
+				return new BitRightShiftNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			if (leftShift != null)
 			{
-				return new BitLeftShiftNode(left, right);
+				return new BitLeftShiftNode(left, right)
+				{
+					Start = context.Start,
+					End = context.Stop
+				};
 			}
 
 			throw new InvalidOperationException();
@@ -155,7 +203,11 @@ namespace PIR8.ISA.Assembly.Visitors
 		{
 			var left = Visit(context.expr(0));
 			var right = Visit(context.expr(1));
-			return new BitOrNode(left, right);
+			return new BitOrNode(left, right)
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 		}
 
 		[NotNull]
@@ -163,7 +215,11 @@ namespace PIR8.ISA.Assembly.Visitors
 		{
 			var left = Visit(context.expr(0));
 			var right = Visit(context.expr(1));
-			return new BitXorNode(left, right);
+			return new BitXorNode(left, right)
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 		}
 
 		[NotNull]
@@ -171,7 +227,11 @@ namespace PIR8.ISA.Assembly.Visitors
 		{
 			var left = Visit(context.expr(0));
 			var right = Visit(context.expr(1));
-			return new BitAndNode(left, right);
+			return new BitAndNode(left, right)
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 		}
 	}
 }

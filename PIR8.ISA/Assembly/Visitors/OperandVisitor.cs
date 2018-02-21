@@ -29,7 +29,9 @@ namespace PIR8.ISA.Assembly.Visitors
 			{
 				new RegisterNode
 				{
-					Register = context.REGISTER().GetText()
+					Register = context.REGISTER().GetText(),
+					Start = context.Start,
+					End = context.Stop
 				}
 			};
 		}
@@ -42,7 +44,9 @@ namespace PIR8.ISA.Assembly.Visitors
 			{
 				new ImmediateAddressNode
 				{
-					Value = visitor.Visit(context.expr())
+					Value = visitor.Visit(context.expr()),
+					Start = context.Start,
+					End = context.Stop
 				}
 			};
 		}
@@ -54,7 +58,9 @@ namespace PIR8.ISA.Assembly.Visitors
 			{
 				new RegisterAddressNode
 				{
-					Register = context.REGISTER().GetText()
+					Register = context.REGISTER().GetText(),
+					Start = context.Start,
+					End = context.Stop
 				}
 			};
 		}

@@ -15,7 +15,9 @@ namespace PIR8.ISA.Assembly.Visitors
 		{
 			return new InstructionNode
 			{
-				Label = context.LABEL().GetText()
+				Label = context.LABEL().GetText(),
+				Start = context.Start,
+				End = context.Stop
 			};
 		}
 
@@ -24,7 +26,9 @@ namespace PIR8.ISA.Assembly.Visitors
 		{
 			return new InstructionNode
 			{
-				Mnemonic = context.LABEL().GetText()
+				Mnemonic = context.LABEL().GetText(),
+				Start = context.Start,
+				End = context.Stop
 			};
 		}
 
@@ -32,7 +36,11 @@ namespace PIR8.ISA.Assembly.Visitors
 		public override InstructionNode VisitOperands([NotNull] GrammarParser.OperandsContext context)
 		{
 			var visitor = new OperandVisitor();
-			var node = new InstructionNode();
+			var node = new InstructionNode
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
 			node.Operands.AddRange(visitor.VisitChildren(context));
 			return node;
 		}
@@ -49,6 +57,16 @@ namespace PIR8.ISA.Assembly.Visitors
 			if (!string.IsNullOrEmpty(nextResult.Mnemonic))
 			{
 				aggregate.Mnemonic = nextResult.Mnemonic;
+			}
+
+			if (nextResult.Start.TokenIndex < (aggregate.Start?.TokenIndex ?? int.MaxValue))
+			{
+				aggregate.Start = nextResult.Start;
+			}
+
+			if (nextResult.End.TokenIndex > (aggregate.End?.TokenIndex ?? int.MinValue))
+			{
+				aggregate.End = nextResult.End;
 			}
 
 			aggregate.Operands.AddRange(nextResult.Operands);

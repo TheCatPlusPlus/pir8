@@ -36,7 +36,9 @@ namespace PIR8.ISA.Assembly.Visitors
 			{
 				BadLabel = context.label()?.GetText(),
 				Name = context.constName().GetText(),
-				Value = visitor.Visit(context.expr())
+				Value = visitor.Visit(context.expr()),
+				Start = context.Start,
+				End = context.Stop
 			};
 
 			return Make(node);
