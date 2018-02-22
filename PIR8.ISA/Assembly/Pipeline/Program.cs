@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using PIR8.ISA.Set;
-
 namespace PIR8.ISA.Assembly.Pipeline
 {
 	public sealed class Program

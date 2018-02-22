@@ -5,13 +5,17 @@
     <Configurations>Debug</Configurations>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.1.1" />
     <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assembly\Codec\" />
+    <Folder Include="Repr\" />
   </ItemGroup>
 
 </Project>
