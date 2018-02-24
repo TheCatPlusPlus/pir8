@@ -1,18 +1,19 @@
+using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
 
 namespace PIR8.ISA.Set
 {
-	public sealed class ClearFlags : Impl.Impl
+	public sealed class ClearFlags : InsnImpl
 	{
 		public override string Mnemonic => "clrf";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 1;
-			return buffer.Match("11111110", BitTag.Instruction);
+			buffer.Bits("1111 1110", BitTag.Instruction);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			cpu.Flags = Flags.None;
 		}

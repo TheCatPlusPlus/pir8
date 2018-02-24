@@ -1,8 +1,9 @@
+using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
 
 namespace PIR8.ISA.Set.ALU
 {
-	public abstract class BaseShift : Impl.Impl
+	public abstract class BaseShift : InsnImpl
 	{
 		protected abstract bool Bit { get; }
 		protected abstract bool ShiftLeft { get; }
@@ -10,34 +11,17 @@ namespace PIR8.ISA.Set.ALU
 		private string DirectionMnemonic => ShiftLeft ? "l" : "r";
 		public override string Mnemonic => $"sh{DirectionMnemonic}.{Bit}";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 1;
 
-			if (!buffer.Match(BaseALU.BasePattern, BitTag.InstructionGroup1))
-			{
-				return false;
-			}
-
-			if (!buffer.Match("11", BitTag.InstructionGroup2))
-			{
-				return false;
-			}
-
-			if (!buffer.Match(ShiftLeft ? "0" : "1", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			if (!buffer.Match(Bit ? "1" : "0", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			return true;
+			buffer.Bits(BaseALU.BasePattern, BitTag.InstructionGroup1);
+			buffer.Bits("11", BitTag.InstructionGroup2);
+			buffer.Bits(ShiftLeft ? "0" : "1", BitTag.Instruction);
+			buffer.Bits(Bit ? "1" : "0", BitTag.Instruction);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			var value = cpu.X;
 			var bit = Bit ? 1 : 0;

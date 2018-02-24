@@ -8,12 +8,12 @@ namespace PIR8.ISA.Set.Jumps
 		protected override string Pattern => "110";
 		protected override bool CheckJump(CPU cpu) => true;
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			// XXX make sure fetching increments PC by buffer.Size
 			var ret = cpu.PC;
 			(cpu.S, cpu.F) = ret.Split();
-			base.Dispatch(insn, cpu);
+			base.Dispatch(cpu, in insn);
 		}
 	}
 }

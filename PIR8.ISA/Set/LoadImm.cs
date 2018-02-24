@@ -4,29 +4,23 @@ using PIR8.ISA.Impl.Operands;
 
 namespace PIR8.ISA.Set
 {
-	public sealed class LoadImm : Impl<Reg, Imm8>
+	public sealed class LoadImm : InsnImpl<Reg, Imm8>
 	{
 		public override string Mnemonic => "load";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 2;
 
-			if (!buffer.Match("00011", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			buffer.Bits(3, ref insn.Operands[0], BitTag.Operand1);
-			buffer.Bits(8, ref insn.Operands[1], BitTag.Operand2);
-
-			return true;
+			buffer.Bits("0001 1", BitTag.Instruction);
+			buffer.Bits(3, ref insn, Operand1);
+			buffer.Bits(8, ref insn, Operand2);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
-			var reg = Operand1.Get(insn);
-			var value = Operand2.Get(insn);
+			var reg = Operand1.Get(in insn);
+			var value = Operand2.Get(in insn);
 			cpu[reg] = value;
 		}
 	}

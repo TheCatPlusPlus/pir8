@@ -1,8 +1,9 @@
+using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
 
 namespace PIR8.ISA.Set.Stack
 {
-	public abstract class BaseStack : Impl.Impl
+	public abstract class BaseStack : InsnImpl
 	{
 		protected abstract bool Push { get; }
 		protected abstract bool AB { get; }
@@ -11,29 +12,16 @@ namespace PIR8.ISA.Set.Stack
 		private string PairMnemonic => AB ? "ab" : "cd";
 		public override string Mnemonic => $"{OpMnemonic}.{PairMnemonic}";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 1;
 
-			if (!buffer.Match("111110", BitTag.InstructionGroup1))
-			{
-				return false;
-			}
-
-			if (!buffer.Match(Push ? "0" : "1", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			if (!buffer.Match(AB ? "0" : "1", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			return true;
+			buffer.Bits("1111 10", BitTag.InstructionGroup1);
+			buffer.Bits(Push ? "0" : "1", BitTag.Instruction);
+			buffer.Bits(AB ? "0" : "1", BitTag.Instruction);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			var sp = cpu.SP;
 

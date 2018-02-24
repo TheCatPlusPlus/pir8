@@ -4,11 +4,11 @@ namespace PIR8.ISA.Impl.Operands
 {
 	public sealed class Imm8 : Operand
 	{
-		public byte Get(Instruction insn)
+		public byte Get(in InsnData insn)
 		{
 			try
 			{
-				return checked((byte)insn.Operands[Index]);
+				return checked((byte)insn[Index]);
 			}
 			catch (OverflowException)
 			{

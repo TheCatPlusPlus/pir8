@@ -1,10 +1,12 @@
 using System;
+using System.IO;
 
 namespace PIR8.ISA
 {
 	public sealed class CPU
 	{
-		public readonly byte[] RAM;
+		private readonly Stream _decoderStream;
+		public readonly Memory RAM;
 
 		public byte F;
 		public byte S;
@@ -17,7 +19,6 @@ namespace PIR8.ISA
 
 		public ushort PC;
 		public ushort SP;
-		public ushort ADR;
 		public byte INS;
 
 		public bool Halt;
@@ -27,6 +28,8 @@ namespace PIR8.ISA
 			get => (Flags)F;
 			set => F = (byte)value;
 		}
+
+		public ushort ADR => RAM.ADR;
 
 		public ref byte this[Register reg]
 		{
@@ -56,9 +59,10 @@ namespace PIR8.ISA
 			}
 		}
 
-		public CPU()
+		public CPU(Memory memory)
 		{
-			RAM = new byte[ushort.MaxValue];
+			RAM = memory;
+			_decoderStream = memory.MakeStream();
 		}
 	}
 }

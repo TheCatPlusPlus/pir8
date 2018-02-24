@@ -1,18 +1,19 @@
+using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
 
 namespace PIR8.ISA.Set
 {
-	public sealed class Halt : Impl.Impl
+	public sealed class Halt : InsnImpl
 	{
 		public override string Mnemonic => "halt";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 1;
-			return buffer.Match("11111111", BitTag.Instruction);
+			buffer.Bits("1111 1111", BitTag.Instruction);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			cpu.Halt = true;
 		}

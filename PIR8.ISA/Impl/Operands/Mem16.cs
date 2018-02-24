@@ -4,11 +4,11 @@ namespace PIR8.ISA.Impl.Operands
 {
 	public sealed class Mem16 : Operand
 	{
-		public ushort Get(Instruction insn)
+		public ushort Get(in InsnData insn)
 		{
 			try
 			{
-				return checked((ushort)insn.Operands[Index]);
+				return checked((ushort)insn[Index]);
 			}
 			catch (OverflowException)
 			{

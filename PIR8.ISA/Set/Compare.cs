@@ -4,26 +4,21 @@ using PIR8.ISA.Impl.Operands;
 
 namespace PIR8.ISA.Set
 {
-	public sealed class Compare : Impl<Reg>
+	public sealed class Compare : InsnImpl<Reg>
 	{
 		public override string Mnemonic => "cmp";
 
-		public override bool Codec(BitBuffer buffer, Instruction insn)
+		public override void Codec(BitBuffer buffer, ref InsnData insn)
 		{
 			buffer.Size = 1;
 
-			if (!buffer.Match("11110", BitTag.Instruction))
-			{
-				return false;
-			}
-
-			buffer.Bits(3, ref insn.Operands[0], BitTag.Operand1);
-			return true;
+			buffer.Bits("1111 0", BitTag.Instruction);
+			buffer.Bits(3, ref insn, Operand1);
 		}
 
-		public override void Dispatch(Instruction insn, CPU cpu)
+		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
-			var reg = Operand1.Get(insn);
+			var reg = Operand1.Get(in insn);
 			var left = cpu.S;
 			var right = cpu[reg];
 
@@ -34,7 +29,7 @@ namespace PIR8.ISA.Set
 				.Update(Flags.Greater, left > right);
 		}
 
-		private bool Parity(byte value)
+		private static bool Parity(byte value)
 		{
 			// TODO maybe get POPCNT
 
