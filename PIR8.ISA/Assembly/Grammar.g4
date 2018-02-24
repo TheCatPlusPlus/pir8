@@ -49,7 +49,7 @@ LABEL : [a-zA-Z_.][a-zA-Z0-9_.]* ;
 
 WHITESPACE : [ \t\n\r] -> skip ;
 
-file : entry* ;
+file : entry* EOF ;
 mnemonic : LABEL ;
 constName : LABEL ;
 
