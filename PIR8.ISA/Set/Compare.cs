@@ -1,6 +1,7 @@
 using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
 using PIR8.ISA.Impl.Operands;
+using PIR8.ISA.Utils;
 
 namespace PIR8.ISA.Set
 {
@@ -24,22 +25,9 @@ namespace PIR8.ISA.Set
 
 			cpu.Flags = cpu.Flags
 				.Update(Flags.Zero, left == 0)
-				.Update(Flags.Parity, Parity(left))
+				.Update(Flags.Parity, left.Parity())
 				.Update(Flags.Equals, left == right)
 				.Update(Flags.Greater, left > right);
-		}
-
-		private static bool Parity(byte value)
-		{
-			// TODO maybe get POPCNT
-
-			var count = 0;
-			for (var idx = 0; idx < 8; idx++)
-			{
-				count += value & (1 << idx);
-			}
-
-			return (count % 2) == 0;
 		}
 	}
 }

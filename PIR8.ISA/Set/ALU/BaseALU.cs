@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 using PIR8.ISA.Impl;
 using PIR8.ISA.Impl.Codec;
+using PIR8.ISA.Utils;
 
 namespace PIR8.ISA.Set.ALU
 {
@@ -22,6 +23,14 @@ namespace PIR8.ISA.Set.ALU
 		public override void Dispatch(CPU cpu, in InsnData insn)
 		{
 			cpu.S = Op(cpu.X, cpu.Y);
+			UpdateFlags(cpu);
+		}
+
+		internal static void UpdateFlags(CPU cpu)
+		{
+			cpu.Flags = cpu.Flags
+				.Update(Flags.Zero, cpu.S == 0)
+				.Update(Flags.Parity, cpu.S.Parity());
 		}
 
 		public abstract byte Op(byte x, byte y);

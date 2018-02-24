@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BearLib", "BearLib\BearLib.csproj", "{B656D2F5-510F-4E1B-B61D-548683286AF1}"
 EndProject
@@ -11,6 +11,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PIR8.Assembler", "PIR8.Assembler\PIR8.Assembler.csproj", "{4B70C61D-3396-4985-9524-59D5F9B0E655}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PIR8.Simulator", "PIR8.Simulator\PIR8.Simulator.csproj", "{E435518F-9A41-4405-9912-E6CCEF79A14C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIR8.ISA.Tests", "PIR8.ISA.Tests\PIR8.ISA.Tests.csproj", "{347AC287-0313-4CE7-86CF-DAB271A8657B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,8 @@ Global
 		{4B70C61D-3396-4985-9524-59D5F9B0E655}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E435518F-9A41-4405-9912-E6CCEF79A14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E435518F-9A41-4405-9912-E6CCEF79A14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347AC287-0313-4CE7-86CF-DAB271A8657B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347AC287-0313-4CE7-86CF-DAB271A8657B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
