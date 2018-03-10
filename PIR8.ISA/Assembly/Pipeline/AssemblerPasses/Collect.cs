@@ -7,17 +7,17 @@ using PIR8.ISA.Utils;
 
 namespace PIR8.ISA.Assembly.Pipeline.AssemblerPasses
 {
-	internal sealed class CollectNames : AssemblerPass
+	internal sealed class Collect : AssemblerPass
 	{
-		public CollectNames(AssemblerState state)
-			: base("collect names", state)
+		public Collect(AssemblerState state)
+			: base("collect", state)
 		{
 		}
 
 		protected override void DoRun()
 		{
 			// first pass: collect all the names, calculate label offsets
-			// (as indices into the instructions list first)
+			// (as indices into the instructions list first), match instructions to impls
 			var offset = 0u;
 
 			foreach (var node in State.Source.Children)
@@ -30,8 +30,8 @@ namespace PIR8.ISA.Assembly.Pipeline.AssemblerPasses
 					case LabelNode label:
 						OnLabel(offset, label);
 						break;
-					case InstructionNode instruction:
-						OnEncodable(ref offset, instruction);
+					case InstructionNode insn:
+						OnEncodable(ref offset, insn);
 						break;
 					case DataNode data:
 						OnEncodable(ref offset, data);
@@ -61,9 +61,9 @@ namespace PIR8.ISA.Assembly.Pipeline.AssemblerPasses
 			State.Consts[def.Name] = def.Value;
 		}
 
-		private void OnEncodable(ref uint offset, EncodableNode insn)
+		private void OnEncodable(ref uint offset, EncodableNode encodable)
 		{
-			State.Encodables.Add(insn);
+			State.Encodables.Add(encodable);
 			++offset;
 		}
 

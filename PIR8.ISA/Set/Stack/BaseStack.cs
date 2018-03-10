@@ -12,13 +12,13 @@ namespace PIR8.ISA.Set.Stack
 		private string PairMnemonic => AB ? "ab" : "cd";
 		public override string Mnemonic => $"{OpMnemonic}.{PairMnemonic}";
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
-			buffer.Size = 1;
+			codec.Size = 1;
 
-			buffer.Bits("1111 10", BitTag.InstructionGroup1);
-			buffer.Bits(Push ? "0" : "1", BitTag.Instruction);
-			buffer.Bits(AB ? "0" : "1", BitTag.Instruction);
+			codec.Bits("1111 10", BitTag.InstructionGroup1);
+			codec.Bits(Push ? "0" : "1", BitTag.Instruction);
+			codec.Bits(AB ? "0" : "1", BitTag.Instruction);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)

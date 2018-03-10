@@ -8,13 +8,13 @@ namespace PIR8.ISA.Set
 	{
 		public override string Mnemonic => "load";
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
-			buffer.Size = 2;
+			codec.Size = 2;
 
-			buffer.Bits("0001 1", BitTag.Instruction);
-			buffer.Bits(3, ref insn, Operand1);
-			buffer.Bits(8, ref insn, Operand2);
+			codec.Bits("0001 1", BitTag.Instruction);
+			codec.Bits(3, ref insn, Operand1);
+			codec.Bits(8, ref insn, Operand2);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)

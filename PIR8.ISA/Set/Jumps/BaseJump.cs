@@ -10,12 +10,12 @@ namespace PIR8.ISA.Set.Jumps
 	{
 		protected abstract string Pattern { get; }
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
 			Debug.Assert(Pattern.Length == 3);
-			buffer.Size = 1;
-			buffer.Bits("0001 0", BitTag.InstructionGroup1);
-			buffer.Bits(Pattern, BitTag.Instruction);
+			codec.Size = 1;
+			codec.Bits("0001 0", BitTag.InstructionGroup1);
+			codec.Bits(Pattern, BitTag.Instruction);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)

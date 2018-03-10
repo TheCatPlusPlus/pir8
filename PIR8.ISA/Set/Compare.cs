@@ -9,12 +9,12 @@ namespace PIR8.ISA.Set
 	{
 		public override string Mnemonic => "cmp";
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
-			buffer.Size = 1;
+			codec.Size = 1;
 
-			buffer.Bits("1111 0", BitTag.Instruction);
-			buffer.Bits(3, ref insn, Operand1);
+			codec.Bits("1111 0", BitTag.Instruction);
+			codec.Bits(3, ref insn, Operand1);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)

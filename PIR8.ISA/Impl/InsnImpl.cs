@@ -34,7 +34,7 @@ namespace PIR8.ISA.Impl
 			};
 		}
 
-		public abstract void Codec(BitBuffer buffer, ref InsnData insn);
+		public abstract void Codec(IBitCodec codec, ref InsnData insn);
 		public abstract void Dispatch(CPU cpu, in InsnData insn);
 	}
 

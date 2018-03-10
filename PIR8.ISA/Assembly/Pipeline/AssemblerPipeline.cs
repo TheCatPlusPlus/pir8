@@ -49,7 +49,7 @@ namespace PIR8.ISA.Assembly.Pipeline
 			var state = new AssemblerState(file, source);
 			var passes = new AssemblerPass[]
 			{
-				new CollectNames(state)
+				new Collect(state)
 			};
 
 			try

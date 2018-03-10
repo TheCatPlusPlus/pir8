@@ -7,10 +7,10 @@ namespace PIR8.ISA.Set
 	{
 		public override string Mnemonic => "clrf";
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
-			buffer.Size = 1;
-			buffer.Bits("1111 1110", BitTag.Instruction);
+			codec.Size = 1;
+			codec.Bits("1111 1110", BitTag.Instruction);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)

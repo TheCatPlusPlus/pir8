@@ -14,14 +14,14 @@ namespace PIR8.ISA.Set.ALU
 		private string DirectionMnemonic => Direction == ShiftDirection.Left ? "l" : "r";
 		public override string Mnemonic => $"{ShiftMnemonic}{DirectionMnemonic}";
 
-		public override void Codec(BitBuffer buffer, ref InsnData insn)
+		public override void Codec(IBitCodec codec, ref InsnData insn)
 		{
-			buffer.Size = 1;
+			codec.Size = 1;
 
-			buffer.Bits(BaseALU.BasePattern, BitTag.InstructionGroup1);
-			buffer.Bits("1", BitTag.InstructionGroup2);
-			buffer.Bits(Direction == ShiftDirection.Left ? "1" : "0", BitTag.Instruction);
-			buffer.Bits(ShiftPattern, BitTag.Instruction);
+			codec.Bits(BaseALU.BasePattern, BitTag.InstructionGroup1);
+			codec.Bits("1", BitTag.InstructionGroup2);
+			codec.Bits(Direction == ShiftDirection.Left ? "1" : "0", BitTag.Instruction);
+			codec.Bits(ShiftPattern, BitTag.Instruction);
 		}
 
 		public override void Dispatch(CPU cpu, in InsnData insn)
