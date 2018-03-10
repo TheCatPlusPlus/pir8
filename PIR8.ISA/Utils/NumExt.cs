@@ -141,7 +141,7 @@ namespace PIR8.ISA.Utils
 		private static (ushort, bool) DoRotateLeft(this ushort value, int bits)
 		{
 			var mask = (int)Math.Pow(2, bits) - 1;
-			var newValue = (value << 1) | ((value >> (bits - 1)) & mask);
+			var newValue = ((value << 1) | (value >> (bits - 1))) & mask;
 			var carry = (newValue & 1) != 0;
 			return ((ushort)newValue, carry);
 		}
@@ -150,7 +150,7 @@ namespace PIR8.ISA.Utils
 		private static (ushort, bool) DoRotateRight(this ushort value, int bits)
 		{
 			var mask = (int)Math.Pow(2, bits) - 1;
-			var newValue = (value >> 1) | ((value << (bits - 1)) & mask);
+			var newValue = ((value >> 1) | (value << (bits - 1))) & mask;
 			var carry = (newValue & 1) != 0;
 			return ((ushort)newValue, carry);
 		}
