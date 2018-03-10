@@ -12,7 +12,7 @@ namespace PIR8.ISA.Assembly.Pipeline
 		internal readonly Dictionary<string, Node> Names;
 		internal readonly Dictionary<string, ExprNode> Consts;
 		internal readonly Dictionary<string, uint> Labels;
-		internal readonly List<EncodableNode> Encodables;
+		internal readonly Dictionary<string, ProgramSection> Sections;
 		internal readonly Dictionary<EncodableNode, Insn> EncodableReprs;
 
 		public Program Program { get; }
@@ -28,7 +28,7 @@ namespace PIR8.ISA.Assembly.Pipeline
 			Names = new Dictionary<string, Node>();
 			Consts = new Dictionary<string, ExprNode>();
 			Labels = new Dictionary<string, uint>();
-			Encodables = new List<EncodableNode>();
+			Sections = new Dictionary<string, ProgramSection>();
 			EncodableReprs = new Dictionary<EncodableNode, Insn>();
 
 			Program = new Program();

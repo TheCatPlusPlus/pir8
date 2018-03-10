@@ -51,6 +51,27 @@ public interface IGrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitConstName([NotNull] GrammarParser.ConstNameContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>section</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSection([NotNull] GrammarParser.SectionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>format</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitFormat([NotNull] GrammarParser.FormatContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>reserve</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReserve([NotNull] GrammarParser.ReserveContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>label</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
 	/// </summary>

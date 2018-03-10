@@ -43,6 +43,9 @@ KW_BYTE : [bB][yY][tT][eE] ;
 KW_WORD : WORD ;
 KW_DWORD : [dD] WORD ;
 KW_QWORD : [qQ] WORD ;
+KW_SECTION : [sS][eE][cC][tT][iI][oO][nN] ;
+KW_RESERVE : [rR][eE][sS][eE][rR][vV][eE] ;
+KW_FORMAT : [fF][oO][rR][mM][aA][tT] ;
 
 REGISTER : [rR] [0-9]+ | [rR] [A-Z]+ ;
 LABEL : [a-zA-Z_.][a-zA-Z0-9_.]* ;
@@ -54,7 +57,10 @@ mnemonic : LABEL ;
 constName : LABEL ;
 
 entry
-	: LABEL COLON #label
+	: KW_SECTION LABEL #section
+	| KW_FORMAT LABEL #format
+	| KW_RESERVE type expr #reserve
+	| LABEL COLON #label
 	| mnemonic operands? #instruction
 	| type datum (COMMA datum)* #data
 	| constName ASSIGN expr #constant

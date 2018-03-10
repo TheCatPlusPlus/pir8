@@ -65,6 +65,39 @@ public partial class GrammarBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <return>The visitor result.</return>
 	public virtual Result VisitConstName([NotNull] GrammarParser.ConstNameContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by the <c>section</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitSection([NotNull] GrammarParser.SectionContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>format</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitFormat([NotNull] GrammarParser.FormatContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by the <c>reserve</c>
+	/// labeled alternative in <see cref="GrammarParser.entry"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitReserve([NotNull] GrammarParser.ReserveContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>label</c>
 	/// labeled alternative in <see cref="GrammarParser.entry"/>.
 	/// <para>

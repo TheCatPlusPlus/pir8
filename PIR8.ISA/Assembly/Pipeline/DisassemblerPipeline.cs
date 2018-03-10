@@ -4,6 +4,7 @@ using System.IO;
 using JetBrains.Annotations;
 
 using PIR8.ISA.Assembly.AST;
+// ReSharper disable UnusedParameter.Local
 
 namespace PIR8.ISA.Assembly.Pipeline
 {

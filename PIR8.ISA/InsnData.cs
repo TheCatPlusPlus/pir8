@@ -5,11 +5,11 @@ namespace PIR8.ISA
 	public struct InsnData
 	{
 		public string Mnemonic;
-		public uint Operand1;
-		public uint Operand2;
-		public uint Operand3;
+		public ulong Operand1;
+		public ulong Operand2;
+		public ulong Operand3;
 
-		public uint this[int index]
+		public ulong this[int index]
 		{
 			get
 			{

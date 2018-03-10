@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 
-namespace PIR8.ISA.Assembly.Pipeline
+namespace PIR8.ISA.Assembly
 {
-	public sealed class Program
+	public sealed class ProgramSection
 	{
 		public List<InsnData> Instructions { get; }
-		public Dictionary<string, uint> Constants { get; }
 		public Dictionary<string, uint> Labels { get; }
 
-		public Program()
+		public ProgramSection()
 		{
 			Instructions = new List<InsnData>();
-			Constants = new Dictionary<string, uint>();
 			Labels = new Dictionary<string, uint>();
 		}
 	}

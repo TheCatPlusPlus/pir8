@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace PIR8.ISA.Assembly.AST
 {
-	public sealed class DataNode : EncodableNode
+	public sealed class ReserveNode : EncodableNode
 	{
 		public string Type { get; }
 		public List<ExprNode> Data { get; }
 
-		public DataNode(string type)
+		public ReserveNode(string type)
 		{
 			Type = type.ToLowerInvariant();
 			Data = new List<ExprNode>();

@@ -87,6 +87,45 @@ namespace PIR8.ISA.Assembly.Visitors
 			return Make(node);
 		}
 
+		public override RootNode VisitSection([NotNull] GrammarParser.SectionContext context)
+		{
+			var name = context.LABEL().GetText();
+			var node = new SectionNode
+			{
+				Name = name,
+				Start = context.Start,
+				End = context.Stop
+			};
+
+			return Make(node);
+		}
+
+		public override RootNode VisitFormat([NotNull] GrammarParser.FormatContext context)
+		{
+			var name = context.LABEL().GetText();
+			var node = new FormatNode
+			{
+				Name = name,
+				Start = context.Start,
+				End = context.Stop
+			};
+
+			return Make(node);
+		}
+
+		public override RootNode VisitReserve([NotNull] GrammarParser.ReserveContext context)
+		{
+			var visitor = new DataVisitor(_errors);
+			var node = new ReserveNode(context.type().GetText())
+			{
+				Start = context.Start,
+				End = context.Stop
+			};
+
+			node.Data.AddRange(visitor.VisitChildren(context));
+			return Make(node);
+		}
+
 		[NotNull]
 		protected override RootNode AggregateResult([NotNull] RootNode aggregate, [NotNull] RootNode nextResult)
 		{

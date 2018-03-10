@@ -63,7 +63,7 @@ namespace PIR8.ISA.Assembly.Pipeline.AssemblerPasses
 
 		private void OnEncodable(ref uint offset, EncodableNode encodable)
 		{
-			State.Encodables.Add(encodable);
+//			State.Encodables.Add(encodable);
 			++offset;
 		}
 
