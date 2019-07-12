@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Assembler": {
-      "commandName": "Project",
-      "commandLineArgs": "../Test/test.asm ../Test/test.bin ../Test/test.dbg"
-    }
-  }
-}

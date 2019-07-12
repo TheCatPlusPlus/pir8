@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="pir8">
+      <UniqueIdentifier>{3f817915-3d3f-4e82-b79c-a959b234f906}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pir8\main.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
+    <ClCompile Include="pir8\pch.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pir8\pch.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
