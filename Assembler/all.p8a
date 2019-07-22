@@ -1,0 +1,70 @@
+include 'pir8.inc'
+
+start:
+	jmpz somewhere
+	jmpp somewhere
+	jmpg somewhere
+	jmpc somewhere
+	jmzg somewhere
+	jmzl somewhere
+	jmpl somewhere
+	jump somewhere
+
+somewhere:
+	iterate reg, f, s, x, y, a, b, c, d
+		load reg, 0xAB
+	end iterate
+
+	iterate reg, f, s, x, y, a, b, c, d
+		load reg, [0xABCD]
+	end iterate
+
+	iterate reg, f, s, x, y, a, b, c, d
+		save [0xFEDC], reg
+	end iterate
+
+	add
+	sub
+	not
+	or
+	xor
+	and
+	lsfr
+	lsfl
+	asfr
+	asfl
+	rtcr
+	rtcl
+	rtwr
+	rtwl
+
+	iterate reg1, f, s, x, y, a, b, c, d
+		iterate reg2, f, s, x, y, a, b, c, d
+			move reg2, reg1
+		end iterate
+	end iterate
+
+	iterate reg, f, s, x, y, a, b, c, d
+		in reg
+	end iterate
+
+	iterate reg, f, s, x, y, a, b, c, d
+		out reg
+	end iterate
+
+	iterate reg, f, s, x, y, a, b, c, d
+		comp reg
+	end iterate
+
+	push a, b
+	push c, d
+
+	pop a, b
+	pop c, d
+
+	clrf
+	halt
+
+image_length:
+	dw_be (fin - start)
+fin:

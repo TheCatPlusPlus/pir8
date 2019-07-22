@@ -1,0 +1,33 @@
+include 'pir8.inc'
+
+origin 0x0002
+
+    load a, [0x0000]
+    load b, [0x0001]
+
+top:
+    move x, a
+    move y, b
+    sub
+
+    jmpz exit
+
+    move s, a
+    comp b
+
+    jmpl lt
+
+    sub
+    move a, s
+    jump top
+
+lt:
+    move y, a
+    move x, b
+    sub
+    move b, s
+    jump top
+
+exit:
+    move d, a
+    halt
