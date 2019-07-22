@@ -6,11 +6,19 @@
 
 #include <pir8/emulator.hpp>
 
+
 namespace pir8
 {
 	void main(std::vector<std::string> args)
 	{
-		tool_emulator(args.size() > 0 ? args[0] : std::nullopt);
+		std::optional<std::string> image{};
+
+		if (args.size() > 0)
+		{
+			image = args[0];
+		}
+
+		tool_emulator(image);
 	}
 }
 

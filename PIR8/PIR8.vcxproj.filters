@@ -12,9 +12,21 @@
     <ClCompile Include="pir8\pch.cpp">
       <Filter>pir8</Filter>
     </ClCompile>
+    <ClCompile Include="pir8\emulator.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pir8\pch.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
+    <ClInclude Include="pir8\utils.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
+    <ClInclude Include="pir8\emulator.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
+    <ClInclude Include="pir8\bit_codec.hpp">
       <Filter>pir8</Filter>
     </ClInclude>
   </ItemGroup>

@@ -28,6 +28,7 @@
 #	include <cstdint>
 #	include <map>
 #	include <set>
+#	include <bitset>
 
 #	include <gsl/gsl_byte>
 #	include <gsl/span>
