@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="fasmg\**" />
+    <EmbeddedResource Remove="fasmg\**" />
+    <None Remove="fasmg\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="*.p8b" />
+  </ItemGroup>
+
+</Project>

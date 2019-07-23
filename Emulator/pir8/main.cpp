@@ -4,9 +4,6 @@
 #include <string>
 #include <optional>
 
-#include <pir8/emulator.hpp>
-
-
 namespace pir8
 {
 	void main(std::vector<std::string> args)
@@ -18,7 +15,6 @@ namespace pir8
 			image = args[0];
 		}
 
-		tool_emulator(image);
 	}
 }
 

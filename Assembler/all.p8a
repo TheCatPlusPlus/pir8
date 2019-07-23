@@ -1,4 +1,4 @@
-include 'pir8.inc'
+include 'pir8.finc'
 
 start:
 	jmpz somewhere

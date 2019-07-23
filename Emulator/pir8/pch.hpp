@@ -44,8 +44,6 @@
 
 #	include <fmt/format.h>
 #	include <fmt/ostream.h>
-
-#	include <curses.h>
 #endif
 
 #define PIR8_NS_ALIAS(ns, alias) \

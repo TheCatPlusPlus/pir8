@@ -7,7 +7,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pir8\emulator.cpp" />
     <ClCompile Include="pir8\main.cpp" />
     <ClCompile Include="pir8\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -15,7 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pir8\bit_codec.hpp" />
-    <ClInclude Include="pir8\emulator.hpp" />
     <ClInclude Include="pir8\pch.hpp" />
     <ClInclude Include="pir8\utils.hpp" />
   </ItemGroup>

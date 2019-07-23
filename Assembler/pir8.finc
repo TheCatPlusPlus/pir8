@@ -108,7 +108,7 @@ end macro
 macro pir8.stack dir_bits*, reg1*, reg2*
 	pir8.get_register_bits @reg1, reg1
 	pir8.get_register_bits @reg2, reg2
-	
+
 	local pair_bits
 
 	if reg1 eq a & reg2 eq b
