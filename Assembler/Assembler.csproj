@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <Configurations>Debug</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
