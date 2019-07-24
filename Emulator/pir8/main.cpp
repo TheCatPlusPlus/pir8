@@ -12,6 +12,8 @@
 
 #include <stb_image.h>
 
+#include <gsl/span>
+
 #include <pir8/utils.hpp>
 
 namespace pir8
@@ -160,8 +162,35 @@ namespace pir8
 		int monitor_height{};
 		glfwGetMonitorWorkarea(monitor, &monitor_x, &monitor_y, &monitor_width, &monitor_height);
 
-		auto width = 1280;
-		auto height = 720;
+		int font_width{};
+		int font_height{};
+		int font_channels{};
+		auto font_pixels = stbi_load("data/terminal10x16_gs_ro.png", &font_width, &font_height, &font_channels, 0);
+		PIR8_ENSUREM(font_pixels, "stbi_load(data/terminal10x16_gs_ro.png)");
+
+		fmt::print(std::cerr, "font = {}x{}:{}\n", font_width, font_height, font_channels);
+
+		auto glyph_width = 10;
+		auto glyph_height = 16;
+		auto font_glyphs_per_row = font_width / glyph_width;
+		auto font_glyph_rows = font_height / glyph_height;
+
+		std::vector<glm::vec2> font_uv{};
+		for (auto glyph_idx = 0; glyph_idx < (font_glyph_rows * font_glyphs_per_row); ++glyph_idx)
+		{
+			auto glyph_x = (glyph_idx % font_glyphs_per_row) * glyph_width;
+			auto glyph_y = (glyph_idx / font_glyphs_per_row) * glyph_height;
+
+			auto glyph_u = static_cast<float>(glyph_x) / font_width;
+			auto glyph_v = static_cast<float>(glyph_y) / font_height;
+
+			font_uv.emplace_back(glm::vec2(glyph_u, glyph_v));
+		}
+
+		auto grid_width = 128;
+		auto grid_height = 45;
+		auto width = glyph_width * grid_width;
+		auto height = glyph_height * grid_height;
 		auto window = glfwCreateWindow(width, height, "PIR8", nullptr, nullptr);
 		PIR8_ENSUREM(window, "glfwCreateWindow");
 
@@ -175,18 +204,11 @@ namespace pir8
 
 		glDebugMessageCallback(on_gl_error, nullptr);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glEnable(GL_DEBUG_OUTPUT);
 
 		glfwSetKeyCallback(window, on_key);
 		glfwSetFramebufferSizeCallback(window, on_resize);
 		glfwSwapInterval(1);
-
-		int font_width{};
-		int font_height{};
-		int font_channels{};
-		auto font_pixels = stbi_load("data/terminal10x16_gs_ro.png", &font_width, &font_height, &font_channels, 0);
-		PIR8_ENSUREM(font_pixels, "stbi_load(data/terminal10x16_gs_ro.png)");
-
-		fmt::print(std::cerr, "font = {}x{}:{}\n", font_width, font_height, font_channels);
 
 		GLuint font_texture{};
 		glCreateTextures(GL_TEXTURE_2D, 1, &font_texture);
@@ -201,22 +223,48 @@ namespace pir8
 		glTextureSubImage2D(font_texture, 0, 0, 0, font_width, font_height, GL_RGB, GL_UNSIGNED_BYTE, font_pixels);
 		stbi_image_free(font_pixels);
 
-		auto glyph_width = 10;
-		auto glyph_height = 16;
-		auto font_glyphs_per_row = font_width / glyph_width;
-		auto font_glyph_rows = font_height / glyph_height;
-		std::vector<std::tuple<glm::vec2>> font_uv{};
-
-		for (auto glyph_idx = 0; glyph_idx < (font_glyph_rows * font_glyphs_per_row); ++glyph_idx)
+		std::vector<glm::vec2> grid_positions{};
+		std::vector<glm::vec2> grid_uvs{};
+		for (auto glyph_idx = 0; glyph_idx < font_uv.size(); ++glyph_idx)
 		{
-			auto glyph_x = (glyph_idx % font_glyphs_per_row) * glyph_width;
-			auto glyph_y = (glyph_idx / font_glyphs_per_row) * glyph_height;
+			auto grid_x = glyph_idx % grid_width;
+			auto grid_y = glyph_idx / grid_width;
 
-			auto glyph_u = static_cast<float>(glyph_x) / font_width;
-			auto glyph_v = static_cast<float>(glyph_y) / font_height;
+			auto grid_screen_x = grid_x * glyph_width;
+			auto grid_screen_y = grid_y * glyph_height;
 
-			font_uv.emplace_back(glm::vec2(glyph_u, glyph_v));
+			grid_positions.emplace_back(glm::vec2(grid_screen_x, grid_screen_y));
+			grid_uvs.emplace_back(font_uv[glyph_idx]);
 		}
+
+		GLuint positions_buffer{};
+		GLuint uvs_buffer{};
+		glCreateBuffers(1, &positions_buffer);
+		glCreateBuffers(1, &uvs_buffer);
+
+		set_debug_name(GL_BUFFER, positions_buffer, "positions_buffer");
+		set_debug_name(GL_BUFFER, uvs_buffer, "uvs_buffer");
+
+		auto positions_span = gsl::span<glm::vec2>(grid_positions);
+		auto positions_byte_span = gsl::as_bytes(positions_span);
+
+		auto uvs_span = gsl::span<glm::vec2>(grid_uvs);
+		auto uvs_byte_span = gsl::as_bytes(uvs_span);
+
+		glNamedBufferStorage(positions_buffer, positions_byte_span.size(), positions_byte_span.data(), 0);
+		glNamedBufferStorage(uvs_buffer, uvs_byte_span.size(), uvs_byte_span.data(), GL_DYNAMIC_STORAGE_BIT);
+
+		GLuint vao{};
+		glCreateVertexArrays(1, &vao);
+		set_debug_name(GL_VERTEX_ARRAY, vao, "vao");
+
+		glEnableVertexArrayAttrib(vao, 0);
+		glVertexArrayVertexBuffer(vao, 0, positions_buffer, 0, sizeof(glm::vec2));
+		glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+
+		glEnableVertexArrayAttrib(vao, 1);
+		glVertexArrayVertexBuffer(vao, 1, uvs_buffer, 0, sizeof(glm::vec2));
+		glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, 0);
 
 		auto projection = glm::ortho(0, width, height, 0);
 
