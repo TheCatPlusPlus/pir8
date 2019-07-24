@@ -18,6 +18,18 @@
     <ClCompile Include="pir8\stb_image.cpp">
       <Filter>pir8</Filter>
     </ClCompile>
+    <ClCompile Include="pir8\gl.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
+    <ClCompile Include="pir8\render.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
+    <ClCompile Include="pir8\stb.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
+    <ClCompile Include="pir8\utils.cpp">
+      <Filter>pir8</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pir8\pch.hpp">
@@ -29,10 +41,29 @@
     <ClInclude Include="pir8\bit_codec.hpp">
       <Filter>pir8</Filter>
     </ClInclude>
+    <ClInclude Include="pir8\gl.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
+    <ClInclude Include="pir8\render.hpp">
+      <Filter>pir8</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\terminal10x16_gs_ro.png">
       <Filter>data</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\terminal10x16_gs_ro.txt">
+      <Filter>data</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shader_fragment.glsl">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\shader_vertex.glsl">
+      <Filter>data</Filter>
+    </None>
   </ItemGroup>
 </Project>

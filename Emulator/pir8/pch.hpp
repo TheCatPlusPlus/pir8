@@ -49,9 +49,10 @@
 #	include <GLFW/glfw3.h>
 
 #	include <glm/glm.hpp>
-#	include <glm/gtc/matrix_transform.hpp>
+#	include <glm/ext.hpp>
 
 #	include <stb_image.h>
+#	include <stb.h>
 #endif
 
 #define PIR8_NS_ALIAS(ns, alias) \

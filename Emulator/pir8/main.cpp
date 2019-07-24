@@ -15,112 +15,11 @@
 #include <gsl/span>
 
 #include <pir8/utils.hpp>
+#include <pir8/gl.hpp>
+#include <pir8/render.hpp>
 
 namespace pir8
 {
-	static void on_glfw_error(int error, const char* description)
-	{
-		fmt::print(std::cerr, "[glfw] (0x{:08X}) {}\n", error, description);
-	}
-
-	static void on_gl_error(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* user)
-	{
-		std::string_view source_str;
-		std::string_view type_str;
-		std::string_view severity_str;
-		std::string_view message_str(message, length);
-
-		switch (source)
-		{
-		case GL_DEBUG_SOURCE_API:
-			source_str = "API";
-			break;
-		case GL_DEBUG_SOURCE_APPLICATION:
-			source_str = "App";
-			break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-			source_str = "WM";
-			break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY:
-			source_str = "Vendor";
-			break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER:
-			source_str = "GLSL";
-			break;
-		case GL_DEBUG_SOURCE_OTHER:
-			source_str = "Other";
-			break;
-		default:
-			source_str = "<unknown source>";
-			break;
-		}
-
-		switch (type)
-		{
-		case GL_DEBUG_TYPE_ERROR:
-			type_str = "Error";
-			break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-			type_str = "Deprecated";
-			break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-			type_str = "UB";
-			break;
-		case GL_DEBUG_TYPE_PORTABILITY:
-			type_str = "Portability";
-			break;
-		case GL_DEBUG_TYPE_PERFORMANCE:
-			type_str = "Performance";
-			break;
-		case GL_DEBUG_TYPE_MARKER:
-			type_str = "Marker";
-			break;
-		case GL_DEBUG_TYPE_PUSH_GROUP:
-			type_str = "Push group";
-			break;
-		case GL_DEBUG_TYPE_POP_GROUP:
-			type_str = "Pop group";
-			break;
-		case GL_DEBUG_TYPE_OTHER:
-			type_str = "Other";
-			break;
-		default:
-			type_str = "<unknown type>";
-			break;
-		}
-
-		switch (severity)
-		{
-		case GL_DEBUG_SEVERITY_HIGH:
-			severity_str = "High";
-			break;
-		case GL_DEBUG_SEVERITY_MEDIUM:
-			severity_str = "Med";
-			break;
-		case GL_DEBUG_SEVERITY_LOW:
-			severity_str = "Low";
-			break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION:
-			severity_str = "Notify";
-			break;
-		default:
-			severity_str = "<unknown severity>";
-			break;
-		}
-
-		fmt::print(std::cerr, "[gl] [{}] [{}] [{}] [{}] {}\n", source_str, type_str, severity_str, id, message_str);
-	}
-
-	static void set_debug_name(GLuint type, GLuint object, std::string_view name)
-	{
-		glObjectLabel(type, object, static_cast<GLsizei>(name.size()), name.data());
-	}
-
-	static void* on_glad_load_func(const char* name)
-	{
-		return glfwGetProcAddress(name);
-	}
-
 	static void on_key(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -131,7 +30,7 @@ namespace pir8
 
 	static void on_resize(GLFWwindow*, int width, int height)
 	{
-		glViewport(0, 0, width, height);
+		gl::viewport({width, height});
 	}
 
 	static void main(std::vector<std::string> args)
@@ -143,133 +42,80 @@ namespace pir8
 			image = args[0];
 		}
 
-		PIR8_ENSURE(glfwInit());
-		glfwSetErrorCallback(on_glfw_error);
+		auto font = r::Font("data/terminal10x16_gs_ro.png");
+		auto window = r::Window(r::g_grid_size * font.m_glyph_size);
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
-		auto monitor = glfwGetPrimaryMonitor();
-		PIR8_ENSUREM(monitor, "glfwGetPrimaryMonitor");
-
-		int monitor_x{};
-		int monitor_y{};
-		int monitor_width{};
-		int monitor_height{};
-		glfwGetMonitorWorkarea(monitor, &monitor_x, &monitor_y, &monitor_width, &monitor_height);
-
-		int font_width{};
-		int font_height{};
-		int font_channels{};
-		auto font_pixels = stbi_load("data/terminal10x16_gs_ro.png", &font_width, &font_height, &font_channels, 0);
-		PIR8_ENSUREM(font_pixels, "stbi_load(data/terminal10x16_gs_ro.png)");
-
-		fmt::print(std::cerr, "font = {}x{}:{}\n", font_width, font_height, font_channels);
-
-		auto glyph_width = 10;
-		auto glyph_height = 16;
-		auto font_glyphs_per_row = font_width / glyph_width;
-		auto font_glyph_rows = font_height / glyph_height;
-
-		std::vector<glm::vec2> font_uv{};
-		for (auto glyph_idx = 0; glyph_idx < (font_glyph_rows * font_glyphs_per_row); ++glyph_idx)
-		{
-			auto glyph_x = (glyph_idx % font_glyphs_per_row) * glyph_width;
-			auto glyph_y = (glyph_idx / font_glyphs_per_row) * glyph_height;
-
-			auto glyph_u = static_cast<float>(glyph_x) / font_width;
-			auto glyph_v = static_cast<float>(glyph_y) / font_height;
-
-			font_uv.emplace_back(glm::vec2(glyph_u, glyph_v));
-		}
-
-		auto grid_width = 128;
-		auto grid_height = 45;
-		auto width = glyph_width * grid_width;
-		auto height = glyph_height * grid_height;
-		auto window = glfwCreateWindow(width, height, "PIR8", nullptr, nullptr);
-		PIR8_ENSUREM(window, "glfwCreateWindow");
-
-		auto window_x = monitor_x + (monitor_width / 2 - width / 2);
-		auto window_y = monitor_y + (monitor_height / 2 - height / 2);
-		glfwSetWindowPos(window, window_x, window_y);
-		glfwShowWindow(window);
-
-		glfwMakeContextCurrent(window);
-		PIR8_ENSURE(gladLoadGLLoader(on_glad_load_func));
-
-		glDebugMessageCallback(on_gl_error, nullptr);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glEnable(GL_DEBUG_OUTPUT);
-
-		glfwSetKeyCallback(window, on_key);
-		glfwSetFramebufferSizeCallback(window, on_resize);
+		glfwSetKeyCallback(window.m_handle, on_key);
+		glfwSetFramebufferSizeCallback(window.m_handle, on_resize);
 		glfwSwapInterval(1);
 
-		GLuint font_texture{};
-		glCreateTextures(GL_TEXTURE_2D, 1, &font_texture);
-		set_debug_name(GL_TEXTURE, font_texture, "font_texture");
+		auto tex_font = r::FontTexture(font);
 
-		glTextureParameteri(font_texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(font_texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTextureParameteri(font_texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(font_texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		std::vector<r::VertexStatic> buf_static_data{};
+		std::vector<r::VertexDynamic> buf_dynamic_data{}; // TODO: maybe geometry shader for this
+		std::vector<uint16_t> buf_index_data{};
 
-		glTextureStorage2D(font_texture, 1, GL_RGB8, font_width, font_height);
-		glTextureSubImage2D(font_texture, 0, 0, 0, font_width, font_height, GL_RGB, GL_UNSIGNED_BYTE, font_pixels);
-		stbi_image_free(font_pixels);
-
-		std::vector<glm::vec2> grid_positions{};
-		std::vector<glm::vec2> grid_uvs{};
-		for (auto glyph_idx = 0; glyph_idx < font_uv.size(); ++glyph_idx)
+		for (auto idx = 0; idx < tex_font.m_uvs.size(); ++idx)
 		{
-			auto grid_x = glyph_idx % grid_width;
-			auto grid_y = glyph_idx / grid_width;
+			auto grid_x = idx % r::g_grid_size.x;
+			auto grid_y = idx / r::g_grid_size.x;
 
-			auto grid_screen_x = grid_x * glyph_width;
-			auto grid_screen_y = grid_y * glyph_height;
+			auto size = glm::vec2(font.m_glyph_size);
+			auto screen = glm::vec2(grid_x, grid_y) * size;
+			auto uv = tex_font.m_uvs[idx];
+			auto start = static_cast<uint16_t>(buf_static_data.size());
 
-			grid_positions.emplace_back(glm::vec2(grid_screen_x, grid_screen_y));
-			grid_uvs.emplace_back(font_uv[glyph_idx]);
+			buf_static_data.emplace_back(screen);
+			buf_static_data.emplace_back(screen + glm::vec2(size.x, 0));
+			buf_static_data.emplace_back(screen + size);
+			buf_static_data.emplace_back(screen + glm::vec2(0, size.y));
+
+			buf_dynamic_data.emplace_back(uv.origin);
+			buf_dynamic_data.emplace_back(uv.origin + glm::vec2(uv.size.x, 0));
+			buf_dynamic_data.emplace_back(uv.origin + uv.size);
+			buf_dynamic_data.emplace_back(uv.origin + glm::vec2(0, uv.size.y));
+
+			buf_index_data.emplace_back(start + 0);
+			buf_index_data.emplace_back(start + 1);
+			buf_index_data.emplace_back(start + 2);
+
+			buf_index_data.emplace_back(start + 0);
+			buf_index_data.emplace_back(start + 2);
+			buf_index_data.emplace_back(start + 3);
 		}
 
-		GLuint positions_buffer{};
-		GLuint uvs_buffer{};
-		glCreateBuffers(1, &positions_buffer);
-		glCreateBuffers(1, &uvs_buffer);
+		auto buf_static = gl::create<gl::Buffer<r::VertexStatic>>("buf_static");
+		auto buf_dynamic = gl::create<gl::Buffer<r::VertexDynamic>>("buf_dynamic");
+		auto buf_index = gl::create<gl::Buffer<uint16_t>>("buf_index");
 
-		set_debug_name(GL_BUFFER, positions_buffer, "positions_buffer");
-		set_debug_name(GL_BUFFER, uvs_buffer, "uvs_buffer");
+		buf_static.allocate(buf_static_data);
+		buf_dynamic.allocate(buf_dynamic_data, gl::BufferUsage::DynamicStorage);
+		buf_index.allocate(buf_index_data);
 
-		auto positions_span = gsl::span<glm::vec2>(grid_positions);
-		auto positions_byte_span = gsl::as_bytes(positions_span);
+		auto vao = gl::create<gl::VertexArray>("vao");
 
-		auto uvs_span = gsl::span<glm::vec2>(grid_uvs);
-		auto uvs_byte_span = gsl::as_bytes(uvs_span);
+		auto vao_static = vao.bind(buf_static);
+		auto vao_dynamic = vao.bind(buf_dynamic);
 
-		glNamedBufferStorage(positions_buffer, positions_byte_span.size(), positions_byte_span.data(), 0);
-		glNamedBufferStorage(uvs_buffer, uvs_byte_span.size(), uvs_byte_span.data(), GL_DYNAMIC_STORAGE_BIT);
+		vao.add(vao_static, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexStatic, position));
+		vao.add(vao_dynamic, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexDynamic, uv));
+		vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, color));
 
-		GLuint vao{};
-		glCreateVertexArrays(1, &vao);
-		set_debug_name(GL_VERTEX_ARRAY, vao, "vao");
+		auto shader_vertex = gl::create<gl::VertexShader>("shader_vertex");
+		auto shader_fragment = gl::create<gl::FragmentShader>("shader_fragment");
+		auto program = gl::create<gl::Program>("program");
 
-		glEnableVertexArrayAttrib(vao, 0);
-		glVertexArrayVertexBuffer(vao, 0, positions_buffer, 0, sizeof(glm::vec2));
-		glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+		shader_vertex.compile(read_file("data/shader_vertex.glsl"));
+		shader_fragment.compile(read_file("data/shader_fragment.glsl"));
+		program.link(shader_vertex, shader_fragment);
 
-		glEnableVertexArrayAttrib(vao, 1);
-		glVertexArrayVertexBuffer(vao, 1, uvs_buffer, 0, sizeof(glm::vec2));
-		glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, 0);
-
-		auto projection = glm::ortho(0, width, height, 0);
+		vao.bind();
+		buf_index.bind_to(gl::BufferTarget::ElementArray);
+		tex_font.m_texture.bind_to(0);
+		program.use();
 
 		auto time = glfwGetTime();
-		while (!glfwWindowShouldClose(window))
+		while (!glfwWindowShouldClose(window.m_handle))
 		{
 			auto new_time = glfwGetTime();
 			auto dt = new_time - time;
@@ -277,10 +123,9 @@ namespace pir8
 
 			glfwPollEvents();
 
-			glBindTextureUnit(0, font_texture);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			glfwSwapBuffers(window);
+			gl::clear(gl::Clear::Color);
+			gl::draw_elements(static_cast<GLsizei>(buf_index_data.size()));
+			glfwSwapBuffers(window.m_handle);
 		}
 	}
 }

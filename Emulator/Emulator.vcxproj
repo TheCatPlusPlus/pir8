@@ -7,23 +7,40 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="pir8\gl.cpp" />
     <ClCompile Include="pir8\main.cpp" />
     <ClCompile Include="pir8\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="pir8\render.cpp" />
+    <ClCompile Include="pir8\stb.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="pir8\stb_image.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="pir8\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pir8\bit_codec.hpp" />
     <ClInclude Include="pir8\pch.hpp" />
+    <ClInclude Include="pir8\render.hpp" />
+    <ClInclude Include="pir8\gl.hpp" />
     <ClInclude Include="pir8\utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\terminal10x16_gs_ro.png">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\terminal10x16_gs_ro.txt">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shader_fragment.glsl" />
+    <None Include="data\shader_vertex.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -63,7 +80,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>false</OmitFramePointers>
-      <PreprocessorDefinitions>DEBUG;_DEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;STRICT;_STRICT;GLFW_INCLUDE_NONE;GLFW_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;WIN32_LEAN_AND_MEAN;NOMINMAX;STRICT;_STRICT;GLFW_INCLUDE_NONE;GLFW_DLL;GLM_ENABLE_EXPERIMENTAL;GLM_FORCE_CXX14;GLM_SWIZZLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
