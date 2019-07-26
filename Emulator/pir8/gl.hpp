@@ -7,6 +7,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <pir8/utils.hpp>
 
@@ -487,8 +488,23 @@ namespace pir8::gl
 		glViewport(size.x, size.y, size.z, size.w);
 	}
 
-	inline void draw_elements(GLsizei count, DrawMode mode = DrawMode::TriangleStrip, IndexType type = IndexType::U16)
+	inline void draw_elements(GLsizei count, DrawMode mode = DrawMode::Triangles, IndexType type = IndexType::U16)
 	{
 		glDrawElements(static_cast<GLenum>(mode), count, static_cast<GLenum>(type), nullptr);
+	}
+
+	inline void draw_arrays(GLsizei count, DrawMode mode = DrawMode::Triangles, GLint first = 0)
+	{
+		glDrawArrays(static_cast<GLenum>(mode), first, count);
+	}
+
+	inline void set_uniform(GLint uniform, glm::mat4 value)
+	{
+		glUniformMatrix4fv(uniform, 1, GL_FALSE, glm::value_ptr(value));
+	}
+
+	inline void set_uniform(GLint uniform, GLint value)
+	{
+		glUniform1i(uniform, value);
 	}
 }

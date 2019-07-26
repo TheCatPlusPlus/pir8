@@ -17,11 +17,11 @@ namespace pir8::r
 	struct VertexStatic
 	{
 		explicit VertexStatic(glm::vec2 position)
-			: position{position}
+			: m_position{position}
 		{
 		}
 
-		glm::vec2 position;
+		glm::vec2 m_position;
 	};
 
 	static_assert(std::is_standard_layout_v<VertexStatic>);
@@ -29,13 +29,13 @@ namespace pir8::r
 	struct VertexDynamic
 	{
 		explicit VertexDynamic(glm::vec2 uv, glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
-			: uv{uv}
-			, color{color}
+			: m_uv{uv}
+			, m_color{color}
 		{
 		}
 
-		glm::vec2 uv;
-		glm::vec4 color;
+		glm::vec2 m_uv;
+		glm::vec4 m_color;
 	};
 
 	static_assert(std::is_standard_layout_v<VertexDynamic>);
@@ -43,19 +43,19 @@ namespace pir8::r
 	struct Rect
 	{
 		Rect(glm::vec2 origin, glm::vec2 size)
-			: origin{origin}
-			, size{size}
+			: m_origin{origin}
+			, m_size{size}
 		{
 		}
 
 		Rect(float x, float y, float width, float height)
-			: origin{x, y}
-			, size{width, height}
+			: m_origin{x, y}
+			, m_size{width, height}
 		{
 		}
 
-		glm::vec2 origin{};
-		glm::vec2 size{};
+		glm::vec2 m_origin{};
+		glm::vec2 m_size{};
 	};
 
 	struct Font
@@ -96,6 +96,7 @@ namespace pir8::r
 		explicit Window(glm::ivec2 size);
 
 		GLFWwindow* m_handle{};
+		glm::ivec2 m_size{};
 	};
 
 	constexpr glm::ivec2 g_grid_size = {128, 45};

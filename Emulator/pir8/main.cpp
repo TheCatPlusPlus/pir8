@@ -55,33 +55,36 @@ namespace pir8
 		std::vector<r::VertexDynamic> buf_dynamic_data{}; // TODO: maybe geometry shader for this
 		std::vector<uint16_t> buf_index_data{};
 
-		for (auto idx = 0; idx < tex_font.m_uvs.size(); ++idx)
+		auto ch = 0;
+		for (auto grid_y = 0; grid_y < r::g_grid_size.y; ++grid_y)
 		{
-			auto grid_x = idx % r::g_grid_size.x;
-			auto grid_y = idx / r::g_grid_size.x;
+			for (auto grid_x = 0; grid_x < r::g_grid_size.x; ++grid_x)
+			{
+				auto size = glm::vec2(font.m_glyph_size);
+				auto screen = glm::vec2(grid_x, grid_y) * size;
+				auto uv = tex_font.m_uvs[ch];
+				auto start = static_cast<uint16_t>(buf_static_data.size());
 
-			auto size = glm::vec2(font.m_glyph_size);
-			auto screen = glm::vec2(grid_x, grid_y) * size;
-			auto uv = tex_font.m_uvs[idx];
-			auto start = static_cast<uint16_t>(buf_static_data.size());
+				buf_static_data.emplace_back(screen);
+				buf_static_data.emplace_back(screen + glm::vec2(size.x, 0));
+				buf_static_data.emplace_back(screen + size);
+				buf_static_data.emplace_back(screen + glm::vec2(0, size.y));
 
-			buf_static_data.emplace_back(screen);
-			buf_static_data.emplace_back(screen + glm::vec2(size.x, 0));
-			buf_static_data.emplace_back(screen + size);
-			buf_static_data.emplace_back(screen + glm::vec2(0, size.y));
+				buf_dynamic_data.emplace_back(uv.m_origin);
+				buf_dynamic_data.emplace_back(uv.m_origin + glm::vec2(uv.m_size.x, 0));
+				buf_dynamic_data.emplace_back(uv.m_origin + uv.m_size);
+				buf_dynamic_data.emplace_back(uv.m_origin + glm::vec2(0, uv.m_size.y));
 
-			buf_dynamic_data.emplace_back(uv.origin);
-			buf_dynamic_data.emplace_back(uv.origin + glm::vec2(uv.size.x, 0));
-			buf_dynamic_data.emplace_back(uv.origin + uv.size);
-			buf_dynamic_data.emplace_back(uv.origin + glm::vec2(0, uv.size.y));
+				buf_index_data.emplace_back(start + 0);
+				buf_index_data.emplace_back(start + 1);
+				buf_index_data.emplace_back(start + 2);
 
-			buf_index_data.emplace_back(start + 0);
-			buf_index_data.emplace_back(start + 1);
-			buf_index_data.emplace_back(start + 2);
+				buf_index_data.emplace_back(start + 0);
+				buf_index_data.emplace_back(start + 2);
+				buf_index_data.emplace_back(start + 3);
 
-			buf_index_data.emplace_back(start + 0);
-			buf_index_data.emplace_back(start + 2);
-			buf_index_data.emplace_back(start + 3);
+				ch = (ch + 1) % tex_font.m_uvs.size();
+			}
 		}
 
 		auto buf_static = gl::create<gl::Buffer<r::VertexStatic>>("buf_static");
@@ -97,9 +100,9 @@ namespace pir8
 		auto vao_static = vao.bind(buf_static);
 		auto vao_dynamic = vao.bind(buf_dynamic);
 
-		vao.add(vao_static, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexStatic, position));
-		vao.add(vao_dynamic, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexDynamic, uv));
-		vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, color));
+		vao.add(vao_static, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexStatic, m_position));
+		vao.add(vao_dynamic, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexDynamic, m_uv));
+		vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, m_color));
 
 		auto shader_vertex = gl::create<gl::VertexShader>("shader_vertex");
 		auto shader_fragment = gl::create<gl::FragmentShader>("shader_fragment");
@@ -110,9 +113,13 @@ namespace pir8
 		program.link(shader_vertex, shader_fragment);
 
 		vao.bind();
-		buf_index.bind_to(gl::BufferTarget::ElementArray);
-		tex_font.m_texture.bind_to(0);
 		program.use();
+
+		auto size = glm::vec2(window.m_size);
+		auto mvp = glm::ortho(0.0f, size.x, size.y, 0.0f);
+
+		gl::set_uniform(0, mvp);
+		gl::set_uniform(1, 0);
 
 		auto time = glfwGetTime();
 		while (!glfwWindowShouldClose(window.m_handle))
@@ -123,8 +130,14 @@ namespace pir8
 
 			glfwPollEvents();
 
+			buf_index.bind_to(gl::BufferTarget::ElementArray);
+			tex_font.m_texture.bind_to(0);
+			vao.bind();
+			program.use();
+
 			gl::clear(gl::Clear::Color);
 			gl::draw_elements(static_cast<GLsizei>(buf_index_data.size()));
+
 			glfwSwapBuffers(window.m_handle);
 		}
 	}

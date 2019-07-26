@@ -10,6 +10,7 @@
 namespace pir8::r
 {
 	Window::Window(glm::ivec2 size)
+		: m_size{size}
 	{
 		auto&& gl_loader = [](const char* name) -> void*
 		{
@@ -96,7 +97,7 @@ namespace pir8::r
 			auto y = (idx / glyph_count.x) * font.m_glyph_size.y;
 
 			auto origin = glm::vec2(x, y) / glm::vec2(font.m_size);
-			auto size = glm::vec2(font.m_glyph_size);
+			auto size = glm::vec2(font.m_glyph_size) / glm::vec2(font.m_size);
 
 			m_uvs.emplace_back(origin, size);
 		}
