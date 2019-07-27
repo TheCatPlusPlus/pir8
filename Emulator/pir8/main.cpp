@@ -38,16 +38,9 @@ namespace pir8
 		}
 
 		auto grid = r::Grid("data/terminal10x16_gs_ro.png", r::g_grid_size);
+		auto cursor = r::GridCursor(grid);
 
-		auto ch = 0;
-		for (auto y = 0; y < grid.m_grid_size.y; ++y)
-		{
-			for (auto x = 0; x < grid.m_grid_size.x; ++x)
-			{
-				grid.put({x, y}, ch, r::g_green, r::g_blue);
-				ch = (ch + 1) % grid.m_font_texture.m_glyphs.size();
-			}
-		}
+		cursor.print("hello").move(6, 6).print("hello\n also");
 
 		glfwSetKeyCallback(grid.m_window.m_handle, on_key);
 

@@ -232,4 +232,59 @@ namespace pir8::r
 
 		m_is_dirty = true;
 	}
+
+	GridCursor& GridCursor::move(int x, int y)
+	{
+		m_x = std::clamp(x, 0, m_grid->m_grid_size.x - 1);
+		m_y = std::clamp(y, 0, m_grid->m_grid_size.y - 1);
+
+		return *this;
+	}
+
+	GridCursor& GridCursor::advance(int dx, int dy)
+	{
+		auto offset = (m_x + m_y * m_grid->m_grid_size.x);
+		auto delta = (dx + dy * m_grid->m_grid_size.x);
+		auto new_offset = std::clamp(offset + delta, 0, m_grid->m_grid_size.x * m_grid->m_grid_size.y);
+
+		auto new_x = new_offset % m_grid->m_grid_size.x;
+		auto new_y = new_offset / m_grid->m_grid_size.x;
+
+		return move(new_x, new_y);
+	}
+
+	GridCursor& GridCursor::fg(glm::vec4 color)
+	{
+		m_fg_color = color;
+		return *this;
+	}
+
+	GridCursor& GridCursor::bg(glm::vec4 color)
+	{
+		m_bg_color = color;
+		return *this;
+	}
+
+	GridCursor& GridCursor::put(int ch)
+	{
+		m_grid->put({m_x, m_y}, ch, m_fg_color, m_bg_color);
+		return advance(1, 0);
+	}
+
+	GridCursor& GridCursor::print(std::string_view text)
+	{
+		for (auto ch : text)
+		{
+			if (ch == '\n')
+			{
+				advance(-m_x, 1);
+			}
+			else
+			{
+				put(ch);
+			}
+		}
+
+		return *this;
+	}
 }

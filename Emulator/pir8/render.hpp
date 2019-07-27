@@ -161,4 +161,29 @@ namespace pir8::r
 	constexpr auto g_blue = rgb(0, 0, 255);
 	constexpr auto g_light_gray = rgb(192, 192, 192);
 	constexpr auto g_dark_gray = rgb(128, 128, 128);
+
+	struct GridCursor
+	{
+		explicit GridCursor(Grid& grid, int x = 0, int y = 0)
+			: m_grid(&grid)
+			, m_x(x)
+			, m_y(y)
+			, m_fg_color(g_light_gray)
+			, m_bg_color(g_black)
+		{
+		}
+
+		GridCursor& move(int x, int y);
+		GridCursor& advance(int dx, int dy);
+		GridCursor& fg(glm::vec4 color);
+		GridCursor& bg(glm::vec4 color);
+		GridCursor& put(int ch);
+		GridCursor& print(std::string_view text);
+
+		Grid* m_grid;
+		int m_x;
+		int m_y;
+		glm::vec4 m_fg_color;
+		glm::vec4 m_bg_color;
+	};
 }
