@@ -73,7 +73,7 @@ namespace pir8::r
 		gl::set_debug_callback(on_gl_message);
 
 		glfwSetFramebufferSizeCallback(m_handle, on_framebuffer_size);
-		glfwSwapInterval(1);
+		glfwSwapInterval(2); // 30FPS
 	}
 
 	Font::Font(fs::path path)
@@ -113,7 +113,7 @@ namespace pir8::r
 			auto origin = glm::vec2(x, y) / glm::vec2(font.m_size);
 			auto size = glm::vec2(font.m_glyph_size) / glm::vec2(font.m_size);
 
-			m_glyphs.emplace_back(origin, size);
+			m_glyphs.emplace_back(Rect(origin, size));
 		}
 
 		m_texture.set(gl::MagFilter::Nearest);
@@ -157,7 +157,7 @@ namespace pir8::r
 				auto size = glm::vec2(m_font.m_glyph_size);
 				auto origin = glm::vec2(x, y) * size;
 
-				auto quad = Quad(origin, size);
+				auto quad = Quad({origin, size});
 				auto offset = static_cast<uint16_t>(data_static.size());
 
 				data_static.emplace_back(quad.m_top_left);
@@ -185,7 +185,8 @@ namespace pir8::r
 
 		m_vao.add(vao_static, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexStatic, m_position));
 		m_vao.add(vao_dynamic, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexDynamic, m_uv));
-		m_vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, m_color));
+		m_vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, m_fg_color));
+		m_vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, m_bg_color));
 
 		auto shader_vs = gl::VertexShader("grid_program_vs");
 		auto shader_fs = gl::FragmentShader("grid_program_fs");
@@ -219,20 +220,15 @@ namespace pir8::r
 		glfwSwapBuffers(m_window.m_handle);
 	}
 
-	void Grid::put(int x, int y, int ch, glm::vec4 color)
-	{
-		put({x, y}, ch, color);
-	}
-
-	void Grid::put(glm::ivec2 position, int ch, glm::vec4 color)
+	void Grid::put(glm::ivec2 position, int ch, glm::vec4 fg_color, glm::vec4 bg_color)
 	{
 		auto offset = (position.x * 4) + (position.y * m_grid_size.x * 4);
 		auto glyph = m_font_texture.m_glyphs.at(ch);
 
-		m_data_dynamic.at(offset + 0) = r::VertexDynamic(glyph.m_top_left, color);
-		m_data_dynamic.at(offset + 1) = r::VertexDynamic(glyph.m_top_right, color);
-		m_data_dynamic.at(offset + 2) = r::VertexDynamic(glyph.m_bottom_right, color);
-		m_data_dynamic.at(offset + 3) = r::VertexDynamic(glyph.m_bottom_left, color);
+		m_data_dynamic.at(offset + 0) = r::VertexDynamic(glyph.m_top_left, fg_color, bg_color);
+		m_data_dynamic.at(offset + 1) = r::VertexDynamic(glyph.m_top_right, fg_color, bg_color);
+		m_data_dynamic.at(offset + 2) = r::VertexDynamic(glyph.m_bottom_right, fg_color, bg_color);
+		m_data_dynamic.at(offset + 3) = r::VertexDynamic(glyph.m_bottom_left, fg_color, bg_color);
 
 		m_is_dirty = true;
 	}

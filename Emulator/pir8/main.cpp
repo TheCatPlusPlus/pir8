@@ -44,7 +44,7 @@ namespace pir8
 		{
 			for (auto x = 0; x < grid.m_grid_size.x; ++x)
 			{
-				grid.put(x, y, ch, glm::vec4(1, 1, 1, 1));
+				grid.put({x, y}, ch, r::g_green, r::g_blue);
 				ch = (ch + 1) % grid.m_font_texture.m_glyphs.size();
 			}
 		}

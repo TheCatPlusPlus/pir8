@@ -19,7 +19,7 @@ namespace pir8::r
 		VertexStatic() = default;
 
 		explicit VertexStatic(glm::vec2 position)
-			: m_position{position}
+			: m_position(position)
 		{
 		}
 
@@ -33,14 +33,16 @@ namespace pir8::r
 	{
 		VertexDynamic() = default;
 
-		explicit VertexDynamic(glm::vec2 uv, glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
-			: m_uv{uv}
-			, m_color{color}
+		explicit VertexDynamic(glm::vec2 uv, glm::vec4 fg_color, glm::vec4 bg_color)
+			: m_uv(uv)
+			, m_fg_color(fg_color)
+			, m_bg_color(bg_color)
 		{
 		}
 
 		glm::vec2 m_uv{};
-		glm::vec4 m_color{};
+		glm::vec4 m_fg_color{};
+		glm::vec4 m_bg_color{};
 	};
 
 	static_assert(std::is_standard_layout_v<VertexDynamic>);
@@ -51,12 +53,6 @@ namespace pir8::r
 		Rect(glm::vec2 origin, glm::vec2 size)
 			: m_origin{origin}
 			, m_size{size}
-		{
-		}
-
-		Rect(float x, float y, float width, float height)
-			: m_origin{x, y}
-			, m_size{width, height}
 		{
 		}
 
@@ -71,16 +67,6 @@ namespace pir8::r
 			, m_top_right(rect.m_origin + glm::vec2(rect.m_size.x, 0))
 			, m_bottom_left{rect.m_origin + glm::vec2(0, rect.m_size.y)}
 			, m_bottom_right{rect.m_origin + rect.m_size}
-		{
-		}
-
-		Quad(glm::vec2 origin, glm::vec2 size)
-			: Quad(Rect(origin, size))
-		{
-		}
-
-		Quad(float x, float y, float width, float height)
-			: Quad(Rect(x, y, width, height))
 		{
 		}
 
@@ -141,8 +127,7 @@ namespace pir8::r
 
 		explicit Grid(fs::path font_path, glm::ivec2 grid_size);
 
-		void put(int x, int y, int ch, glm::vec4 color);
-		void put(glm::ivec2 position, int ch, glm::vec4 color);
+		void put(glm::ivec2 position, int ch, glm::vec4 fg_color, glm::vec4 bg_color);
 		void draw();
 
 		glm::ivec2 m_grid_size;
@@ -162,5 +147,18 @@ namespace pir8::r
 		std::vector<r::VertexDynamic> m_data_dynamic{}; // TODO: maybe geometry shader for this
 	};
 
+	constexpr glm::vec4 rgb(float r, float g, float b)
+	{
+		return {r / 255.0f, g / 255.0f, b / 255.0f, 1.0f};
+	}
+
 	constexpr glm::ivec2 g_grid_size = {128, 45};
+
+	constexpr auto g_white = rgb(255, 255, 255);
+	constexpr auto g_black = rgb(0, 0, 0);
+	constexpr auto g_red = rgb(255, 0, 0);
+	constexpr auto g_green = rgb(0, 255, 0);
+	constexpr auto g_blue = rgb(0, 0, 255);
+	constexpr auto g_light_gray = rgb(192, 192, 192);
+	constexpr auto g_dark_gray = rgb(128, 128, 128);
 }
