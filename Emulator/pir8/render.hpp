@@ -111,7 +111,7 @@ namespace pir8::r
 		Window& operator=(const Window& other) = delete;
 		Window& operator=(Window&& other) noexcept = delete;
 
-		explicit Window(glm::ivec2 size);
+		explicit Window(glm::ivec2 size, float scale);
 
 		GLFWwindow* m_handle{};
 		glm::ivec2 m_size{};
@@ -125,12 +125,13 @@ namespace pir8::r
 		Grid& operator=(const Grid& other) = delete;
 		Grid& operator=(Grid&& other) noexcept = delete;
 
-		explicit Grid(fs::path font_path, glm::ivec2 grid_size);
+		explicit Grid(fs::path font_path, glm::ivec2 grid_size, float grid_scale);
 
 		void put(glm::ivec2 position, int ch, glm::vec4 fg_color, glm::vec4 bg_color);
 		void draw();
 
-		glm::ivec2 m_grid_size;
+		glm::ivec2 m_grid_size{};
+		float m_grid_scale{};
 
 		Font m_font;
 		Window m_window;
@@ -152,7 +153,8 @@ namespace pir8::r
 		return {r / 255.0f, g / 255.0f, b / 255.0f, 1.0f};
 	}
 
-	constexpr glm::ivec2 g_grid_size = {128, 45};
+	constexpr float g_grid_scale = 2;
+	constexpr glm::ivec2 g_grid_size = {80, 25};
 
 	constexpr auto g_white = rgb(255, 255, 255);
 	constexpr auto g_black = rgb(0, 0, 0);

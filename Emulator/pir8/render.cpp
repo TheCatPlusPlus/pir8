@@ -14,8 +14,8 @@ namespace pir8::r
 		return glm::ortho(0.0f, size.x, size.y, 0.0f, -1.0f, 1.0f);
 	}
 
-	Window::Window(glm::ivec2 size)
-		: m_size(size)
+	Window::Window(glm::ivec2 size, float scale)
+		: m_size(glm::ivec2(glm::vec2(size) * scale))
 		, m_projection(ortho(glm::vec2(size.x, size.y)))
 	{
 		auto&& gl_loader = [](const char* name) -> void*
@@ -57,8 +57,10 @@ namespace pir8::r
 		int monitor_height{};
 		glfwGetMonitorWorkarea(monitor, &monitor_x, &monitor_y, &monitor_width, &monitor_height);
 
-		auto width = size.x;
-		auto height = size.y;
+		auto width = m_size.x;
+		auto height = m_size.y;
+		fmt::print(std::cerr, "[window] width = {} height = {} scale = {:.1}\n", width, height, scale);
+
 		m_handle = glfwCreateWindow(width, height, "PIR8", nullptr, nullptr);
 		PIR8_ENSUREM(m_handle, "glfwCreateWindow");
 
@@ -125,10 +127,11 @@ namespace pir8::r
 		m_texture.upload(font.m_pixels);
 	}
 
-	Grid::Grid(fs::path font_path, glm::ivec2 grid_size)
+	Grid::Grid(fs::path font_path, glm::ivec2 grid_size, float grid_scale)
 		: m_grid_size(grid_size)
+		, m_grid_scale(grid_scale)
 		, m_font(font_path)
-		, m_window(grid_size * m_font.m_glyph_size)
+		, m_window(grid_size * m_font.m_glyph_size, grid_scale)
 		, m_font_texture(m_font)
 		, m_program("grid_program")
 		, m_vao("grid_vao")

@@ -37,7 +37,7 @@ namespace pir8
 			image = args[0];
 		}
 
-		auto grid = r::Grid("data/terminal10x16_gs_ro.png", r::g_grid_size);
+		auto grid = r::Grid("data/terminal10x16_gs_ro.png", r::g_grid_size, r::g_grid_scale);
 		auto cursor = r::GridCursor(grid);
 
 		cursor.print("hello").move(6, 6).print("hello\n also");
