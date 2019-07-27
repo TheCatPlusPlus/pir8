@@ -148,11 +148,27 @@ namespace pir8::gl
 
 	PIR8_FLAGS(BufferUsage)
 
+	namespace detail
+	{
+		template <typename T>
+		struct Namespace
+		{
+		};
+
+		template <typename T>
+		GLuint do_create(std::string_view name)
+		{
+			auto object = Namespace<T>::create();
+			glObjectLabel(Namespace<T>::value, object, static_cast<GLsizei>(name.size()), name.data());
+			return object;
+		}
+	}
+
 	template <typename T>
 	struct Buffer
 	{
-		explicit Buffer(GLuint id)
-			: m_id{id}
+		explicit Buffer(std::string_view name)
+			: m_id{detail::do_create<Buffer>(name)}
 		{
 		}
 
@@ -164,15 +180,6 @@ namespace pir8::gl
 			auto data_bytes = gsl::as_bytes(data);
 			m_size = static_cast<GLsizeiptr>(data_bytes.size());
 			glNamedBufferStorage(m_id, m_size, data_bytes.data(), static_cast<GLbitfield>(flags));
-		}
-
-		void allocate(GLsizeiptr size, BufferUsage flags = BufferUsage::None)
-		{
-			PIR8_ENSURE(m_size == 0);
-			PIR8_ENSURE(size > 0);
-
-			m_size = size;
-			glNamedBufferStorage(m_id, size, nullptr, static_cast<GLbitfield>(flags));
 		}
 
 		void upload(gsl::span<const T> data, GLintptr offset = 0)
@@ -196,8 +203,8 @@ namespace pir8::gl
 
 	struct Texture
 	{
-		explicit Texture(GLuint id)
-			: m_id{id}
+		explicit Texture(std::string_view name)
+			: m_id{detail::do_create<Texture>(name)}
 		{
 		}
 
@@ -270,8 +277,8 @@ namespace pir8::gl
 
 	struct VertexArray
 	{
-		explicit VertexArray(GLuint id)
-			: m_id{id}
+		explicit VertexArray(std::string_view name)
+			: m_id{detail::do_create<VertexArray>(name)}
 		{
 		}
 
@@ -287,7 +294,7 @@ namespace pir8::gl
 		}
 
 		template <typename T>
-		VertexArrayBuffer bind(Buffer<T> buffer, GLintptr offset = 0)
+		VertexArrayBuffer add_buffer(Buffer<T> buffer, GLintptr offset = 0)
 		{
 			auto buffer_index = m_next_buffer++;
 			glVertexArrayVertexBuffer(m_id, buffer_index, buffer.m_id, offset, static_cast<GLsizei>(sizeof(T)));
@@ -307,8 +314,8 @@ namespace pir8::gl
 	template <GLuint Type>
 	struct Shader
 	{
-		explicit Shader(GLuint id)
-			: m_id{id}
+		explicit Shader(std::string_view name)
+			: m_id{detail::do_create<Shader<Type>>(name)}
 		{
 		}
 
@@ -332,8 +339,8 @@ namespace pir8::gl
 
 	struct Program
 	{
-		explicit Program(GLuint id)
-			: m_id{id}
+		explicit Program(std::string_view name)
+			: m_id{detail::do_create<Program>(name)}
 		{
 		}
 
@@ -381,71 +388,69 @@ namespace pir8::gl
 		GLuint m_id;
 	};
 
-	template <typename T>
-	struct Namespace
+	namespace detail
 	{
-	};
-
-	template <typename T>
-	struct Namespace<Buffer<T>>
-	{
-		static constexpr GLuint value = GL_BUFFER;
-
-		static GLuint create()
+		template <typename T>
+		struct Namespace<Buffer<T>>
 		{
-			GLuint id{};
-			glCreateBuffers(1, &id);
-			return id;
-		}
-	};
+			static constexpr GLuint value = GL_BUFFER;
 
-	template <>
-	struct Namespace<Texture>
-	{
-		static constexpr GLuint value = GL_TEXTURE;
+			static GLuint create()
+			{
+				GLuint id{};
+				glCreateBuffers(1, &id);
+				return id;
+			}
+		};
 
-		static GLuint create()
+		template <>
+		struct Namespace<Texture>
 		{
-			GLuint id{};
-			glCreateTextures(GL_TEXTURE_2D, 1, &id);
-			return id;
-		}
-	};
+			static constexpr GLuint value = GL_TEXTURE;
 
-	template <>
-	struct Namespace<VertexArray>
-	{
-		static constexpr GLuint value = GL_VERTEX_ARRAY;
+			static GLuint create()
+			{
+				GLuint id{};
+				glCreateTextures(GL_TEXTURE_2D, 1, &id);
+				return id;
+			}
+		};
 
-		static GLuint create()
+		template <>
+		struct Namespace<VertexArray>
 		{
-			GLuint id{};
-			glCreateVertexArrays(1, &id);
-			return id;
-		}
-	};
+			static constexpr GLuint value = GL_VERTEX_ARRAY;
 
-	template <>
-	struct Namespace<Program>
-	{
-		static constexpr GLuint value = GL_PROGRAM;
+			static GLuint create()
+			{
+				GLuint id{};
+				glCreateVertexArrays(1, &id);
+				return id;
+			}
+		};
 
-		static GLuint create()
+		template <>
+		struct Namespace<Program>
 		{
-			return glCreateProgram();
-		}
-	};
+			static constexpr GLuint value = GL_PROGRAM;
 
-	template <GLuint Type>
-	struct Namespace<Shader<Type>>
-	{
-		static constexpr GLuint value = GL_SHADER;
+			static GLuint create()
+			{
+				return glCreateProgram();
+			}
+		};
 
-		static GLuint create()
+		template <GLuint Type>
+		struct Namespace<Shader<Type>>
 		{
-			return glCreateShader(Type);
-		}
-	};
+			static constexpr GLuint value = GL_SHADER;
+
+			static GLuint create()
+			{
+				return glCreateShader(Type);
+			}
+		};
+	}
 
 	using DebugCallbackPtr = Ptr<void(GLuint id, DebugSource source, DebugType type, DebugSeverity severity, std::string_view message)>;
 
@@ -453,20 +458,6 @@ namespace pir8::gl
 	std::string_view to_string(DebugType type);
 	std::string_view to_string(DebugSeverity severity);
 	void set_debug_callback(DebugCallbackPtr callback);
-
-	template <typename T>
-	void set_debug_name(T object, std::string_view name)
-	{
-		glObjectLabel(Namespace<T>::value, object.m_id, static_cast<GLsizei>(name.size()), name.data());
-	}
-
-	template <typename T>
-	T create(std::string_view name)
-	{
-		auto object = T(Namespace<T>::create());
-		set_debug_name(object, name);
-		return object;
-	}
 
 	inline void clear(Clear flags)
 	{

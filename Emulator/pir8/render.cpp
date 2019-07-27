@@ -9,8 +9,14 @@
 
 namespace pir8::r
 {
+	static glm::mat4 ortho(glm::vec2 size)
+	{
+		return glm::ortho(0.0f, size.x, size.y, 0.0f, -1.0f, 1.0f);
+	}
+
 	Window::Window(glm::ivec2 size)
-		: m_size{size}
+		: m_size(size)
+		, m_projection(ortho(glm::vec2(size.x, size.y)))
 	{
 		auto&& gl_loader = [](const char* name) -> void*
 		{
@@ -25,6 +31,11 @@ namespace pir8::r
 		auto&& on_glfw_error = [](int error, const char* message)
 		{
 			fmt::print(std::cerr, "[GLFW] [0x{:08X}]\n\t{}\n", error, message);
+		};
+
+		auto&& on_framebuffer_size = [](GLFWwindow*, int width, int height)
+		{
+			gl::viewport({width, height});
 		};
 
 		PIR8_ENSURE(glfwInit());
@@ -60,6 +71,9 @@ namespace pir8::r
 
 		PIR8_ENSURE(gladLoadGLLoader(gl_loader));
 		gl::set_debug_callback(on_gl_message);
+
+		glfwSetFramebufferSizeCallback(m_handle, on_framebuffer_size);
+		glfwSwapInterval(1);
 	}
 
 	Font::Font(fs::path path)
@@ -87,7 +101,7 @@ namespace pir8::r
 	}
 
 	FontTexture::FontTexture(const Font& font)
-		: m_texture{gl::create<gl::Texture>("tex_font")}
+		: m_texture("tex_font")
 	{
 		auto glyph_count = font.m_size / font.m_glyph_size;
 
@@ -99,7 +113,7 @@ namespace pir8::r
 			auto origin = glm::vec2(x, y) / glm::vec2(font.m_size);
 			auto size = glm::vec2(font.m_glyph_size) / glm::vec2(font.m_size);
 
-			m_uvs.emplace_back(origin, size);
+			m_glyphs.emplace_back(origin, size);
 		}
 
 		m_texture.set(gl::MagFilter::Nearest);
@@ -109,5 +123,117 @@ namespace pir8::r
 
 		m_texture.allocate(gl::TextureFormat::RGB8, font.m_size.x, font.m_size.y);
 		m_texture.upload(font.m_pixels);
+	}
+
+	Grid::Grid(fs::path font_path, glm::ivec2 grid_size)
+		: m_grid_size(grid_size)
+		, m_font(font_path)
+		, m_window(grid_size * m_font.m_glyph_size)
+		, m_font_texture(m_font)
+		, m_program("grid_program")
+		, m_vao("grid_vao")
+		, m_buffer_static("grid_buffer_static")
+		, m_buffer_dynamic("grid_buffer_dynamic")
+		, m_buffer_index("grid_buffer_index")
+	{
+		m_font.m_pixels.clear();
+
+		std::vector<r::VertexStatic> data_static{};
+		std::vector<uint16_t> data_index{};
+
+		auto data_count = static_cast<size_t>(grid_size.x * grid_size.y * 4);
+		auto index_count = static_cast<size_t>(grid_size.x * grid_size.y * 6);
+
+		m_element_count = static_cast<GLsizei>(index_count);
+		data_static.reserve(data_count);
+		data_index.reserve(index_count);
+
+		m_data_dynamic.resize(data_count);
+
+		for (auto y = 0; y < grid_size.y; ++y)
+		{
+			for (auto x = 0; x < grid_size.x; ++x)
+			{
+				auto size = glm::vec2(m_font.m_glyph_size);
+				auto origin = glm::vec2(x, y) * size;
+
+				auto quad = Quad(origin, size);
+				auto offset = static_cast<uint16_t>(data_static.size());
+
+				data_static.emplace_back(quad.m_top_left);
+				data_static.emplace_back(quad.m_top_right);
+				data_static.emplace_back(quad.m_bottom_right);
+				data_static.emplace_back(quad.m_bottom_left);
+
+				data_index.emplace_back(offset + 0);
+				data_index.emplace_back(offset + 1);
+				data_index.emplace_back(offset + 2);
+
+				data_index.emplace_back(offset + 0);
+				data_index.emplace_back(offset + 2);
+				data_index.emplace_back(offset + 3);
+			}
+		}
+
+		m_buffer_static.allocate(data_static);
+		m_buffer_index.allocate(data_index);
+		m_buffer_dynamic.allocate(m_data_dynamic, gl::BufferUsage::DynamicStorage);
+
+		m_vao.bind();
+		auto vao_static = m_vao.add_buffer(m_buffer_static);
+		auto vao_dynamic = m_vao.add_buffer(m_buffer_dynamic);
+
+		m_vao.add(vao_static, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexStatic, m_position));
+		m_vao.add(vao_dynamic, gl::AttribSize::Two, gl::AttribType::Float, offsetof(r::VertexDynamic, m_uv));
+		m_vao.add(vao_dynamic, gl::AttribSize::Four, gl::AttribType::Float, offsetof(r::VertexDynamic, m_color));
+
+		auto shader_vs = gl::VertexShader("grid_program_vs");
+		auto shader_fs = gl::FragmentShader("grid_program_fs");
+
+		shader_vs.compile(read_file("data/shader_vertex.glsl"));
+		shader_fs.compile(read_file("data/shader_fragment.glsl"));
+		m_program.link(shader_vs, shader_fs);
+		m_program.use();
+
+		gl::set_uniform(0, m_window.m_projection);
+		gl::set_uniform(1, 0);
+
+		gl::clear_color(glm::vec4(0, 0, 0, 1));
+	}
+
+	void Grid::draw()
+	{
+		if (m_is_dirty)
+		{
+			m_buffer_dynamic.upload(m_data_dynamic);
+			m_is_dirty = false;
+		}
+
+		m_buffer_index.bind_to(gl::BufferTarget::ElementArray);
+		m_font_texture.m_texture.bind_to(0);
+		m_vao.bind();
+		m_program.use();
+
+		gl::clear(gl::Clear::Color);
+		gl::draw_elements(m_element_count);
+		glfwSwapBuffers(m_window.m_handle);
+	}
+
+	void Grid::put(int x, int y, int ch, glm::vec4 color)
+	{
+		put({x, y}, ch, color);
+	}
+
+	void Grid::put(glm::ivec2 position, int ch, glm::vec4 color)
+	{
+		auto offset = (position.x * 4) + (position.y * m_grid_size.x * 4);
+		auto glyph = m_font_texture.m_glyphs.at(ch);
+
+		m_data_dynamic.at(offset + 0) = r::VertexDynamic(glyph.m_top_left, color);
+		m_data_dynamic.at(offset + 1) = r::VertexDynamic(glyph.m_top_right, color);
+		m_data_dynamic.at(offset + 2) = r::VertexDynamic(glyph.m_bottom_right, color);
+		m_data_dynamic.at(offset + 3) = r::VertexDynamic(glyph.m_bottom_left, color);
+
+		m_is_dirty = true;
 	}
 }
